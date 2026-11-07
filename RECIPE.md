@@ -83,14 +83,24 @@ A bare JSON array of recipes (`[ {...}, {...} ]`) also works when importing.
 |---|---|---|
 | `prepMinutes` | number | Hands-on prep time. Defaults to `0`. |
 | `cookMinutes` | number | Cooking time. Defaults to `0`. |
+| `timeRange` | string | Optional. Overrides the automatic **Total Time** bucket, e.g. `"60+m"`. |
 
-You don't set the **Total Time** filter yourself. The page adds `prepMinutes + cookMinutes` and puts the recipe in one bucket:
+By default the page adds `prepMinutes + cookMinutes` and puts the recipe in one bucket:
 
 | Bucket | Rule |
 |---|---|
 | `0–10 min` | total ≤ 10 |
 | `10–30 min` | 11 ≤ total ≤ 30 |
 | `30+ min` | total > 30 |
+
+To use a different bucket, set `timeRange`. Any new range automatically gets its own **Total Time** filter chip, sorted by minutes. These formats are understood:
+
+| You write | Chip shows |
+|---|---|
+| `"60+m"`, `"60+"`, `"60+ min"` | `60+ min` |
+| `"30-60m"`, `"30 to 60 min"` | `30–60 min` |
+| `"under 5"`, `"<5"` | `0–5 min` |
+| anything else, e.g. `"overnight"` | `Overnight`, listed after the numeric ranges |
 
 ### Filter axes (multi-value)
 
@@ -101,7 +111,15 @@ Every filter axis is an **array**, so one recipe can satisfy several options. Fo
 "proteins": ["ground-meat", "turkey"]
 ```
 
-Values are case-insensitive and normalized to kebab-case, so `"Ground Meat"` becomes `ground-meat`. Use the **canonical values** below so your recipes line up with the built-in filter chips. If you use a value that isn't in the list, such as `"lamb"` or `"caribbean"`, it **gets its own filter chip automatically**.
+Values are case-insensitive and normalized to kebab-case, so `"Ground Meat"` becomes `ground-meat`.
+
+**Filters are built from your recipes.** Each time recipes load, are imported, or are removed, every filter group is rebuilt from the values the library actually uses:
+
+- A value that only an imported recipe uses, such as `"lamb"`, `"caribbean"`, or a `"brunch"` meal, gets its own chip right away.
+- A value no recipe uses anymore disappears, and if it was selected, the filter is cleared.
+- A group with no values at all is hidden.
+
+The **canonical values** below get nice labels, icons, and a fixed order. Use them where they fit so your recipes line up with everyone else's. New values come after them, labeled in Title Case (`"plantains"` shows as **Plantains**).
 
 #### `meals`
 
@@ -173,6 +191,8 @@ These tie a recipe to the Base & Booster system described in the [README](README
 | `2` | Roasted Allium-Tomato Jam | | `B` | East & SE Asian Umami |
 | `3` | Green Citrus & Herb Slurry | | `C` | South Asian Masala |
 | `4` | Velvet Garlic-Nut Cream | | `D` | Latin & Tex-Mex Adobo |
+
+You can also use your own block ids, such as a base `5` or a booster `"E"`. They show up as new **Freezer Bases** and **Boosters** chips with a neutral style and the label "Base 5" or "Booster E".
 
 Listed blocks are all **used together** in the recipe. The *Freezer Bases* and *Boosters* filters match any recipe that uses **at least one** of the selected blocks. Cube counts are added up in the shopping list's **Pull from the freezer** summary.
 
