@@ -74,13 +74,13 @@
             BASE & BOOSTER
             <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/30 font-sans font-bold">STACKING STUDIO</span>
           </h1>
-          <p class="text-xs text-slate-400">Modular Freezer System • Multi-Category Array Filtering Engine</p>
+          <p class="text-xs text-slate-400">Modular Freezer System • 4 Structural Bases × 4 Cultural Boosters</p>
         </div>
       </div>
 
       <!-- Search & Controls -->
-      <div class="flex items-center gap-3 w-full md:w-auto flex-wrap">
-        <div class="relative flex-1 md:w-64">
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <div class="relative flex-1 md:w-72">
           <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
           <input type="text" id="searchInput" placeholder="Search dish, ingredient, region..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition">
           <button id="clearSearch" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white">
@@ -88,12 +88,6 @@
           </button>
         </div>
         
-        <!-- Import Recipes Button -->
-        <label class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-amber-200 rounded-xl text-xs font-semibold border border-amber-500/30 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-          <i class="fa-solid fa-file-arrow-up"></i> Import JSON
-          <input type="file" id="importFile" accept=".json" class="hidden">
-        </label>
-
         <button id="openShoppingListBtn" class="px-3.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 rounded-xl text-xs font-bold shadow-lg shadow-emerald-500/20 transition flex items-center gap-1.5 whitespace-nowrap">
           <i class="fa-solid fa-cart-shopping"></i> Shopping List
         </button>
@@ -117,7 +111,7 @@
           </div>
           <div>
             <h2 class="font-display font-bold text-base text-slate-100">STACKING STUDIO CONTROLS</h2>
-            <p class="text-xs text-slate-400">Select frozen bases, boosters, meal types, and multi-category filters</p>
+            <p class="text-xs text-slate-400">Select frozen bases and flavor boosters to filter your custom meals</p>
           </div>
         </div>
         <div class="flex items-center gap-2">
@@ -127,12 +121,12 @@
       </div>
 
       <!-- Controls Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         
         <!-- 1. Structural Bases -->
         <div>
           <label class="block text-xs font-bold text-amber-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-            <i class="fa-solid fa-cube text-amber-400"></i> Bases (1–4)
+            <i class="fa-solid fa-cube text-amber-400"></i> Structural Bases (1–4)
           </label>
           <div class="flex flex-col gap-2" id="basesContainer"></div>
         </div>
@@ -140,49 +134,33 @@
         <!-- 2. Flavor Boosters -->
         <div>
           <label class="block text-xs font-bold text-purple-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-            <i class="fa-solid fa-bolt text-purple-400"></i> Boosters (A–D)
+            <i class="fa-solid fa-bolt text-purple-400"></i> Cultural Boosters (A–D)
           </label>
           <div class="flex flex-col gap-2" id="flavorsContainer"></div>
         </div>
 
-        <!-- 3. Cook Time Brackets -->
+        <!-- 3. Culture / Region -->
         <div>
           <label class="block text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-            <i class="fa-regular fa-clock text-indigo-400"></i> Cook Time
+            <i class="fa-solid fa-globe text-indigo-400"></i> Culture / Region
           </label>
-          <div class="flex flex-col gap-1.5" id="timeContainer"></div>
+          <div class="flex flex-wrap gap-1.5" id="regionsContainer"></div>
         </div>
 
-        <!-- 4. Meal Type -->
-        <div>
-          <label class="block text-xs font-bold text-teal-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-            <i class="fa-solid fa-utensils text-teal-400"></i> Meal Type
-          </label>
-          <div class="flex flex-col gap-1.5" id="mealContainer"></div>
-        </div>
-
-        <!-- 5. Culture / Region -->
-        <div>
-          <label class="block text-xs font-bold text-blue-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-            <i class="fa-solid fa-globe text-blue-400"></i> Culture / Region
-          </label>
-          <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1" id="regionsContainer"></div>
-        </div>
-
-        <!-- 6. Proteins -->
+        <!-- 4. Proteins -->
         <div>
           <label class="block text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-            <i class="fa-solid fa-drumstick-bite text-emerald-400"></i> Proteins
+            <i class="fa-solid fa-drumstick-bite text-emerald-400"></i> Protein Vehicle
           </label>
-          <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1" id="proteinsContainer"></div>
+          <div class="flex flex-wrap gap-1.5" id="proteinsContainer"></div>
         </div>
 
-        <!-- 7. Starches -->
+        <!-- 5. Starches -->
         <div>
           <label class="block text-xs font-bold text-cyan-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-            <i class="fa-solid fa-bowl-rice text-cyan-400"></i> Starches
+            <i class="fa-solid fa-bowl-rice text-cyan-400"></i> Starch Vehicle
           </label>
-          <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1" id="starchesContainer"></div>
+          <div class="flex flex-wrap gap-1.5" id="starchesContainer"></div>
         </div>
 
       </div>
@@ -192,12 +170,12 @@
     <div id="activeStackBanner" class="hidden glass-panel rounded-xl px-4 py-3 border border-amber-500/30 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-2">
         <span class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1">
-          <i class="fa-solid fa-layer-group"></i> Active Filters:
+          <i class="fa-solid fa-layer-group"></i> Active Stack Filter:
         </span>
         <div class="flex flex-wrap gap-1.5" id="activeStackBadges"></div>
       </div>
       <button id="clearActiveStackBtn" class="text-xs text-slate-400 hover:text-white transition flex items-center gap-1">
-        <i class="fa-solid fa-xmark"></i> Clear Filters
+        <i class="fa-solid fa-xmark"></i> Clear Active Stack
       </button>
     </div>
 
@@ -228,7 +206,7 @@
           <i class="fa-solid fa-filter-circle-xmark"></i>
         </div>
         <h4 class="font-display font-bold text-xl text-white mb-2">No Matching Recipes in Matrix</h4>
-        <p class="text-sm text-slate-400 max-w-md mx-auto mb-6">No recipe matches your current combination of filters. Try clearing active filters or broadening your search criteria.</p>
+        <p class="text-sm text-slate-400 max-w-md mx-auto mb-6">No recipe matches your current stack combination. Try expanding your selected bases or resetting active filters.</p>
         <button id="resetFiltersLink" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-amber-500/20 transition">
           <i class="fa-solid fa-rotate-left mr-1.5"></i> Clear Filters
         </button>
@@ -315,7 +293,7 @@
         <!-- Tier 1 Content -->
         <div id="tier1Content" class="space-y-6">
           <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-300 leading-relaxed">
-            <strong class="text-emerald-400">Batch-Cook Instructions:</strong> Buy these ingredients to prep and freeze all 4 Structural Bases and 4 Cultural Boosters at once. Yields approx. 12–15 standard ice-cube blocks per component.
+            <strong class="text-emerald-400">Batch-Cook Instructions:</strong> Buy these ingredients to prep and freeze all 4 Structural Bases and 4 Cultural Boosters at once. Yields approx. 12–15 standard ice-cube blocks per component (over 100 total meal blocks).
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -325,10 +303,17 @@
               </h4>
               <ul class="space-y-2 text-xs text-slate-300">
                 <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Yellow onions (9 medium-large)</span></li>
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Carrots (3 large) & Celery (3 stalks)</span></li>
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Fresh garlic (4 full bulbs) & Shallots (4 bulbs)</span></li>
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Fresh ginger root & lemongrass</span></li>
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Poblano peppers, fresh cilantro & limes</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Carrots (3 large)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Celery (3 stalks)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Fresh garlic (4 full bulbs)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Shallots (4 bulbs)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Fresh ginger root (1 large piece)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Fresh lemongrass (3 stalks)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Poblano / Green bell peppers (2 peppers)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Fresh cilantro & parsley (1 large bunch)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Fresh limes & lemons (6-8 fruits for juice/zest)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Fresh Thyme & Rosemary (1 pack each)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Fresh curry leaves & green chilies (1 small pack)</span></li>
               </ul>
             </div>
 
@@ -338,9 +323,17 @@
               </h4>
               <ul class="space-y-2 text-xs text-slate-300">
                 <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Raw cashews or sunflower seeds (1.5 cups)</span></li>
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Dried ancho chilies & chipotles in adobo</span></li>
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Tomato paste, vegetable stock concentrate</span></li>
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Olive oil, sesame oil, vinegars, tamari, dry red wine</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Dried ancho chilies (3 peppers)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Chipotles in adobo sauce (1 small can)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Tomato paste (2 small cans/tubes)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Vegetable stock concentrate (2+ cups)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Extra virgin olive oil & cooking oil</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Toasted sesame oil & Coconut oil/ghee</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Balsamic & Apple cider vinegar</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Tamari/Soy sauce & Shaoxing rice wine</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Dry red wine (1 bottle)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Dijon mustard & Vegan Worcestershire</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Spices: Mustard seeds, cumin, turmeric, oregano</span></li>
               </ul>
             </div>
           </div>
@@ -349,7 +342,7 @@
         <!-- Tier 2 Content -->
         <div id="tier2Content" class="hidden space-y-6">
           <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-300 leading-relaxed">
-            <strong class="text-cyan-400">Meal Vehicle Inventory:</strong> Keep these standard proteins, starches, and fresh garnishes in your fridge and pantry.
+            <strong class="text-cyan-400">Meal Vehicle Inventory:</strong> Keep these standard proteins, starches, and fresh garnishes in your fridge and pantry. When paired with your frozen Base & Booster blocks, you can cook 100+ meals on demand in under 15 minutes.
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -358,9 +351,13 @@
                 <i class="fa-solid fa-drumstick-bite"></i> Proteins
               </h4>
               <ul class="space-y-2 text-xs text-slate-300">
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Chicken, ground meat, turkey, eggs</span></li>
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>White beans, black beans, chickpeas, lentils</span></li>
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Tofu, tempeh, steak</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Cannellini / White beans (3-4 cans)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Black & Pinto beans (3-4 cans)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Chickpeas (3-4 cans)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Brown & Red lentils (dry or cooked)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Extra-firm tofu (2-3 blocks)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Tempeh & Seitan cutlets</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Steak / Poultry / Eggs (optional)</span></li>
               </ul>
             </div>
 
@@ -370,8 +367,12 @@
               </h4>
               <ul class="space-y-2 text-xs text-slate-300">
                 <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Jasmine & Basmati rice</span></li>
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Quinoa, Farro, Orzo, Pasta, Lo Mein</span></li>
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Tortillas, Potatoes, Sourdough</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Quinoa & Pearled Farro</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Orzo & Short pasta (Penne/Rigatoni)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Lo Mein & Soba rice noodles</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Corn & Flour tortillas</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Potatoes (yellow or sweet potatoes)</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Polenta tube & Crusty sourdough</span></li>
               </ul>
             </div>
 
@@ -380,8 +381,12 @@
                 <i class="fa-solid fa-pepper-hot"></i> Fresh Garnishes
               </h4>
               <ul class="space-y-2 text-xs text-slate-300">
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Baby spinach, cilantro, limes, avocados</span></li>
-                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Scallions, pepitas, crumbled feta</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Baby spinach & Chopped kale</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Fresh cilantro, dill & Thai basil</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Avocados & Fresh limes</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Scallions & Green onions</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Toasted pepitas & Crushed peanuts</span></li>
+                <li class="flex items-center gap-2"><input type="checkbox" class="accent-emerald-500 rounded"> <span>Crumbled feta cheese</span></li>
               </ul>
             </div>
           </div>
@@ -397,9 +402,1612 @@
 
   <!-- Primary Application Script -->
   <script>
-    // Global State
-    window.BASE_AND_BOOSTER_RECIPES = [];
+    // =========================================================================
+    // MASTER RECIPE ARRAY DEFINITION (BASE & BOOSTER SYSTEM - 120+ RECIPES)
+    // =========================================================================
+    window.BASE_AND_BOOSTER_RECIPES = [
+      // --- CATEGORY 1: GREEK & MEDITERRANEAN (1-15) ---
+      {
+        id: "rec-001",
+        title: "Tuscan White Bean & Kale Skillet",
+        bases: [2, 4],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 5,
+        cook: 10,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["2 cubes Base 2 (Allium Jam)", "1 cube Base 4 (Velvet Cream)", "1 cube Flavor A (Euro-Bistro)", "1 can cannellini beans", "2 cups chopped kale", "1/2 cup broth", "Sourdough bread"],
+        steps: ["Melt bases and flavor booster in a hot skillet with broth.", "Add drained beans and kale; simmer 5 minutes until wilted.", "Serve warm with olive oil and sourdough bread."]
+      },
+      {
+        id: "rec-002",
+        title: "Classic Lemon Herb Piccata Noodles",
+        bases: [1],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Pasta",
+        ingredients: ["2 cubes Base 1 (Mirepoix)", "1 cube Flavor A (Euro-Bistro)", "8 oz spaghetti", "2 tbsp capers", "Juice of 1 lemon", "Seared tofu cutlets"],
+        steps: ["Boil pasta until al dente; reserve 1/2 cup water.", "Melt Base 1 and Flavor A in skillet with lemon juice and capers.", "Toss noodles and tofu in the silky pan sauce."]
+      },
+      {
+        id: "rec-003",
+        title: "Greek Giant Bean (Gigantes Plaki) Skillet",
+        bases: [2],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 5,
+        cook: 12,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["2 cubes Base 2 (Allium Jam)", "1 cube Flavor A (Euro-Bistro)", "1 can butter beans", "1/2 cup crushed tomatoes", "Oregano", "Feta cheese"],
+        steps: ["Melt Base 2 and Flavor A with crushed tomatoes.", "Add butter beans and simmer until sauce thickens.", "Top with oregano and crumbled feta."]
+      },
+      {
+        id: "rec-004",
+        title: "Spanakorizo (Greek Spinach & Rice)",
+        bases: [1, 3],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 5,
+        cook: 10,
+        protein: "Chickpeas",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 1", "1 cube Base 3", "1 cube Flavor A", "3 cups cooked rice", "3 cups baby spinach", "1 can chickpeas", "Fresh dill"],
+        steps: ["Melt the three cubes in a large skillet with water.", "Fold in rice, chickpeas, and baby spinach until hot and wilted.", "Garnish with fresh dill and lemon."]
+      },
+      {
+        id: "rec-005",
+        title: "Greek Lemon Garlic Potato Hash",
+        bases: [1],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 10,
+        cook: 15,
+        protein: "Eggs",
+        starch: "Crispy Potatoes",
+        ingredients: ["2 cubes Base 1", "1 cube Flavor A", "3 parboiled potatoes", "2 poached eggs", "Lemon juice", "Oregano"],
+        steps: ["Sauté potato cubes until crisp.", "Toss with melted Base 1, Flavor A, and lemon juice.", "Top with poached eggs."]
+      },
+      {
+        id: "rec-006",
+        title: "Mediterranean Orzo & Roasted Eggplant",
+        bases: [2],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 5,
+        cook: 12,
+        protein: "Chickpeas",
+        starch: "Orzo",
+        ingredients: ["2 cubes Base 2", "1 cube Flavor A", "1 cup dry orzo", "1 cup roasted eggplant", "1/2 cup chickpeas", "Kalamata olives"],
+        steps: ["Simmer dry orzo in broth with Base 2 and Flavor A.", "Stir in eggplant, chickpeas, and olives.", "Finish with extra virgin olive oil."]
+      },
+      {
+        id: "rec-007",
+        title: "Tuscan White Bean & Tomato Soup",
+        bases: [1, 2],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 5,
+        cook: 15,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["1 cube Base 1", "1 cube Base 2", "1 cube Flavor A", "2 cans white beans", "4 cups broth", "Rosemary"],
+        steps: ["Simmer all ingredients in a pot for 12 minutes.", "Lightly mash half the beans for body.", "Serve warm with sourdough."]
+      },
+      {
+        id: "rec-008",
+        title: "Creamy Sun-Dried Tomato Gnocchi",
+        bases: [4],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 5,
+        cook: 10,
+        protein: "Tempeh",
+        starch: "Polenta",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor A", "1 package gnocchi", "1/4 cup sun-dried tomatoes", "Tempeh strips", "Spinach"],
+        steps: ["Pan-fry gnocchi until golden.", "Melt Base 4 and Flavor A with tomatoes and a splash of water.", "Toss gnocchi in cream sauce and top with spinach and tempeh."]
+      },
+      {
+        id: "rec-009",
+        title: "Provençal Herb Lentil Braise",
+        bases: [1, 2],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 5,
+        cook: 20,
+        protein: "Lentils",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "1 cube Base 2", "1 cube Flavor A", "1 cup brown lentils", "3 cups broth", "Baby potatoes"],
+        steps: ["Simmer lentils, broth, and cubes for 20 minutes.", "Fold in roasted baby potatoes.", "Season with fresh thyme."]
+      },
+      {
+        id: "rec-010",
+        title: "Garlic Herb Roasted Chickpea Bowl",
+        bases: [3],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 5,
+        cook: 15,
+        protein: "Chickpeas",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 3", "1 cube Flavor A", "1 can chickpeas", "2 cups quinoa", "Cucumbers", "Tahini"],
+        steps: ["Sauté chickpeas in skillet with Base 3 and Flavor A until blistered.", "Serve over warm quinoa.", "Surround with cucumbers and tahini."]
+      },
+      {
+        id: "rec-011",
+        title: "Creamy Mushroom Farro Risotto",
+        bases: [1, 4],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 10,
+        cook: 20,
+        protein: "White Beans",
+        starch: "Farro",
+        ingredients: ["1 cube Base 1", "2 cubes Base 4", "1 cube Flavor A", "1 cup farro", "Sliced mushrooms", "Broth"],
+        steps: ["Sauté mushrooms with Base 1 and Flavor A.", "Gradually add farro and warm broth while stirring.", "Stir in Base 4 at the end for velvet texture."]
+      },
+      {
+        id: "rec-012",
+        title: "Mediterranean Herb Polenta Stacks",
+        bases: [3],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Polenta",
+        ingredients: ["1 cube Base 3", "1 cube Flavor A", "1 tube polenta", "Grilled tofu", "Olive oil"],
+        steps: ["Pan-fry polenta rounds and tofu until crisp.", "Melt Base 3 and Flavor A with water to make herb glaze.", "Spoon glaze over stacks."]
+      },
+      {
+        id: "rec-013",
+        title: "Lemon Dill White Bean Mash on Toast",
+        bases: [3],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 5,
+        cook: 5,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["1 cube Base 3", "1 cube Flavor A", "1 can cannellini beans", "Sourdough bread", "Lemon zest"],
+        steps: ["Warm mashed beans in skillet with Base 3 and Flavor A.", "Toast sourdough slices.", "Spoon citrus bean mash over toast."]
+      },
+      {
+        id: "rec-014",
+        title: "Italian Roasted Pepper & White Bean Skillet",
+        bases: [2],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 5,
+        cook: 10,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["2 cubes Base 2", "1 cube Flavor A", "1 can white beans", "Roasted red peppers", "Fresh basil"],
+        steps: ["Melt Base 2 and Flavor A with sliced roasted peppers.", "Simmer with white beans for 8 minutes.", "Garnish with fresh basil."]
+      },
+      {
+        id: "rec-015",
+        title: "Provençal Herb & Olive Grain Salad",
+        bases: [3],
+        flavors: ["A"],
+        culture: "Greek & Mediterranean",
+        prep: 10,
+        cook: 15,
+        protein: "Chickpeas",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 3", "1 cube Flavor A", "2 cups cooked quinoa", "Kalamata olives", "Tomatoes"],
+        steps: ["Thaw Base 3 and Flavor A with olive oil for dressing.", "Toss warm quinoa in dressing.", "Fold in olives and tomatoes."]
+      },
 
+      // --- CATEGORY 2: MEXICAN & TEX-MEX (16-30) ---
+      {
+        id: "rec-016",
+        title: "Spicy Black Bean & Corn Tacos",
+        bases: [2],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 5,
+        cook: 10,
+        protein: "Black Beans",
+        starch: "Tortillas",
+        ingredients: ["1 cube Base 2", "1 cube Flavor D", "1 can black beans", "1/2 cup corn", "Corn tortillas", "Cilantro & lime"],
+        steps: ["Melt Base 2 and Flavor D in skillet.", "Add beans and corn; cook until reduced into glaze.", "Spoon into tortillas and top with cilantro."]
+      },
+      {
+        id: "rec-017",
+        title: "10-Minute Smoky Chipotle Chili",
+        bases: [1, 2],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 5,
+        cook: 15,
+        protein: "Black Beans",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 1", "1 cube Base 2", "2 cubes Flavor D", "2 cans beans", "Crushed tomatoes", "Quinoa"],
+        steps: ["Combine bases, adobo, beans, tomatoes, and broth in pot.", "Simmer for 15 minutes.", "Serve over quinoa with avocado."]
+      },
+      {
+        id: "rec-018",
+        title: "Authentic Arroz Rojo (Mexican Red Rice)",
+        bases: [1],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 5,
+        cook: 15,
+        protein: "Pinto Beans",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 1", "1 cube Flavor D", "1 cup rice", "1 can pinto beans", "Broth", "Bell peppers"],
+        steps: ["Sauté dry rice and bell peppers until toasted.", "Stir in melted bases, beans, and broth.", "Cover and simmer 15 minutes."]
+      },
+      {
+        id: "rec-019",
+        title: "Adobo Lentil Taco Skillet",
+        bases: [2],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 5,
+        cook: 15,
+        protein: "Lentils",
+        starch: "Tortillas",
+        ingredients: ["1 cube Base 2", "2 cubes Flavor D", "1 cup cooked lentils", "Water", "Tortillas", "Cabbage slaw"],
+        steps: ["Simmer lentils with Base 2, Flavor D, and water.", "Cook down until thick and glazed.", "Serve in tortillas with slaw."]
+      },
+      {
+        id: "rec-020",
+        title: "Quick Weeknight Latin Shakshuka",
+        bases: [2],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 5,
+        cook: 12,
+        protein: "Eggs",
+        starch: "Sourdough",
+        ingredients: ["2 cubes Base 2", "1 cube Flavor D", "1 can crushed tomatoes", "4 eggs", "Cilantro"],
+        steps: ["Simmer tomatoes with melted Base 2 and Flavor D.", "Crack eggs into wells in sauce.", "Cover and simmer until whites are set."]
+      },
+      {
+        id: "rec-021",
+        title: "Smoky Black Bean & Quinoa Bowl",
+        bases: [3],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 5,
+        cook: 12,
+        protein: "Black Beans",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 3", "1 cube Flavor D", "2 cups quinoa", "1 can black beans", "Avocado"],
+        steps: ["Warm black beans in skillet with Base 3 and Flavor D.", "Layer warm quinoa in bowls.", "Top with smoky beans and avocado."]
+      },
+      {
+        id: "rec-022",
+        title: "Adobo Potato & Pinto Bean Hash",
+        bases: [1],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 10,
+        cook: 15,
+        protein: "Pinto Beans",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "1 cube Flavor D", "2 cups parboiled potatoes", "1 can pinto beans", "Cilantro"],
+        steps: ["Sauté potato cubes until crispy.", "Toss with pinto beans, Base 1, and Flavor D.", "Garnish with cilantro."]
+      },
+      {
+        id: "rec-023",
+        title: "Creamy Enchilada Pasta Skillet",
+        bases: [4],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 5,
+        cook: 12,
+        protein: "Black Beans",
+        starch: "Pasta",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor D", "8 oz penne pasta", "1/2 cup black beans", "Broth"],
+        steps: ["Boil pasta in broth; reserve water.", "Melt Base 4 and Flavor D into pasta with reserved water.", "Stir in black beans."]
+      },
+      {
+        id: "rec-024",
+        title: "Verde Sweet Potato & Black Bean Stew",
+        bases: [2, 3],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 10,
+        cook: 20,
+        protein: "Black Beans",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 2", "1 cube Base 3", "1 cube Flavor D", "2 sweet potatoes", "1 can black beans", "Broth"],
+        steps: ["Simmer diced sweet potatoes in broth with cubes.", "Stir in black beans and cook 5 minutes.", "Serve warm over quinoa."]
+      },
+      {
+        id: "rec-025",
+        title: "Smoky Adobo Corn & Edamame Salad",
+        bases: [3],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 5,
+        cook: 8,
+        protein: "Tofu",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 3", "1 cube Flavor D", "2 cups corn", "1 cup edamame", "Lime juice"],
+        steps: ["Sauté corn and edamame with Base 3 and Flavor D until charred.", "Spritz with lime juice and serve warm over quinoa."]
+      },
+      {
+        id: "rec-026",
+        title: "Charred Poblano & White Bean Tacos",
+        bases: [3],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 5,
+        cook: 10,
+        protein: "White Beans",
+        starch: "Tortillas",
+        ingredients: ["1 cube Base 3", "1 cube Flavor D", "1 can white beans", "Tortillas", "Cabbage"],
+        steps: ["Warm white beans in skillet with Base 3 and Flavor D.", "Spoon into tortillas.", "Top with shredded cabbage and lime."]
+      },
+      {
+        id: "rec-027",
+        title: "Adobo Chickpea & Rice Skillet",
+        bases: [1],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 5,
+        cook: 12,
+        protein: "Chickpeas",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 1", "1 cube Flavor D", "1 can chickpeas", "2 cups cooked rice", "Bell peppers"],
+        steps: ["Sauté bell peppers with Base 1 and Flavor D.", "Add chickpeas and rice; toss until coated.", "Garnish with cilantro."]
+      },
+      {
+        id: "rec-028",
+        title: "Creamy Chipotle Corn Chowder",
+        bases: [1, 4],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 5,
+        cook: 15,
+        protein: "White Beans",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "2 cubes Base 4", "1 cube Flavor D", "3 cups corn", "White beans", "Broth"],
+        steps: ["Simmer corn and white beans in broth with Base 1 and Flavor D.", "Stir in Base 4 velvet cream and blend half.", "Serve hot."]
+      },
+      {
+        id: "rec-029",
+        title: "Smoky Adobo Tofu Scramble Bowl",
+        bases: [3],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 3", "1 cube Flavor D", "1 block tofu", "Black beans", "Avocado"],
+        steps: ["Sauté crumbled tofu with Base 3 and Flavor D.", "Serve over warm black beans and quinoa.", "Top with avocado slices."]
+      },
+      {
+        id: "rec-030",
+        title: "Quick Mexican Pinto Bean Soup",
+        bases: [2],
+        flavors: ["D"],
+        culture: "Mexican & Tex-Mex",
+        prep: 5,
+        cook: 15,
+        protein: "Pinto Beans",
+        starch: "Tortillas",
+        ingredients: ["2 cubes Base 2", "1 cube Flavor D", "2 cans pinto beans", "Broth", "Tortilla strips"],
+        steps: ["Combine beans, broth, Base 2, and Flavor D in a pot.", "Simmer for 15 minutes.", "Ladle into bowls and top with tortilla strips."]
+      },
+
+      // --- CATEGORY 3: SOUPS, STEWS & CHILIS (31-45) ---
+      {
+        id: "rec-031",
+        title: "Ultimate Three-Base Vegetable Stew",
+        bases: [1, 2, 3],
+        flavors: ["A"],
+        culture: "Soups, Stews & Chilis",
+        prep: 10,
+        cook: 20,
+        protein: "Lentils",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "1 cube Base 2", "1 cube Base 3", "Potatoes & carrots", "Lentils", "4 cups broth"],
+        steps: ["Combine bases and broth in pot.", "Add chopped potatoes, carrots, and lentils.", "Simmer 20 minutes until tender."]
+      },
+      {
+        id: "rec-032",
+        title: "Creamy Roasted Garlic & White Bean Soup",
+        bases: [1, 4],
+        flavors: ["A"],
+        culture: "Soups, Stews & Chilis",
+        prep: 5,
+        cook: 20,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["1 cube Base 1", "2 cubes Base 4", "1 cube Flavor A", "2 cans beans", "Broth"],
+        steps: ["Simmer beans and broth with Base 1 and Flavor A.", "Stir in Base 4 and blend until smooth.", "Serve with sourdough."]
+      },
+      {
+        id: "rec-033",
+        title: "French Onion Lentil Soup",
+        bases: [1, 2],
+        flavors: ["A"],
+        culture: "Soups, Stews & Chilis",
+        prep: 10,
+        cook: 25,
+        protein: "Lentils",
+        starch: "Sourdough",
+        ingredients: ["1 cube Base 1", "1 cube Base 2", "1 cube Flavor A", "1 cup lentils", "Broth", "Bread"],
+        steps: ["Simmer lentils, broth, and cubes for 25 minutes.", "Top with toasted bread and broil until bubbly."]
+      },
+      {
+        id: "rec-034",
+        title: "Creamy Tomato Basil Bisque",
+        bases: [2, 4],
+        flavors: ["A"],
+        culture: "Soups, Stews & Chilis",
+        prep: 5,
+        cook: 15,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["1 cube Base 2", "2 cubes Base 4", "1 cube Flavor A", "Crushed tomatoes", "Basil"],
+        steps: ["Simmer tomatoes, broth, Base 2, and Flavor A.", "Whisk in Base 4 and fresh basil.", "Serve with grilled cheese."]
+      },
+      {
+        id: "rec-035",
+        title: "Hearty Root Vegetable & Barley Stew",
+        bases: [1, 2],
+        flavors: ["A"],
+        culture: "Soups, Stews & Chilis",
+        prep: 10,
+        cook: 30,
+        protein: "Lentils",
+        starch: "Farro",
+        ingredients: ["1 cube Base 1", "1 cube Base 2", "1 cube Flavor A", "Barley", "Root veggies", "Broth"],
+        steps: ["Combine barley, vegetables, broth, and cubes in pot.", "Simmer covered for 30 minutes.", "Season to taste."]
+      },
+      {
+        id: "rec-036",
+        title: "Zesty Green Herb Minestrone",
+        bases: [1, 3],
+        flavors: ["A"],
+        culture: "Soups, Stews & Chilis",
+        prep: 10,
+        cook: 20,
+        protein: "White Beans",
+        starch: "Pasta",
+        ingredients: ["1 cube Base 1", "1 cube Base 3", "1 cube Flavor A", "Pasta shells", "White beans", "Zucchini"],
+        steps: ["Simmer broth, pasta, beans, and zucchini with cubes.", "Stir in Base 3 at the end.", "Serve hot."]
+      },
+      {
+        id: "rec-037",
+        title: "Velvety Potato Leek Soup",
+        bases: [1, 4],
+        flavors: ["A"],
+        culture: "Soups, Stews & Chilis",
+        prep: 10,
+        cook: 20,
+        protein: "White Beans",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "2 cubes Base 4", "1 cube Flavor A", "Potatoes", "Broth"],
+        steps: ["Simmer potatoes in broth with Base 1 and Flavor A.", "Stir in Base 4 and blend until smooth.", "Garnish with chives."]
+      },
+      {
+        id: "rec-038",
+        title: "Spicy Lentil & Tomato Broth Soup",
+        bases: [2],
+        flavors: ["D"],
+        culture: "Soups, Stews & Chilis",
+        prep: 5,
+        cook: 20,
+        protein: "Lentils",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 2", "1 cube Flavor D", "1 cup red lentils", "Broth", "Lemon"],
+        steps: ["Simmer lentils, broth, Base 2, and Flavor D for 20 minutes.", "Finish with fresh lemon juice."]
+      },
+      {
+        id: "rec-039",
+        title: "Creamy White Bean & Rosemary Chowder",
+        bases: [1, 4],
+        flavors: ["A"],
+        culture: "Soups, Stews & Chilis",
+        prep: 5,
+        cook: 15,
+        protein: "White Beans",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "2 cubes Base 4", "1 cube Flavor A", "Beans", "Corn", "Rosemary"],
+        steps: ["Simmer beans and corn in broth with Base 1 and Flavor A.", "Stir in Base 4 and rosemary.", "Simmer until thickened."]
+      },
+      {
+        id: "rec-040",
+        title: "Rustic Vegetable & White Bean Soup",
+        bases: [1, 2],
+        flavors: ["A"],
+        culture: "Soups, Stews & Chilis",
+        prep: 10,
+        cook: 20,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["1 cube Base 1", "1 cube Base 2", "1 cube Flavor A", "Beans", "Celery & carrots"],
+        steps: ["Combine all ingredients in soup pot.", "Simmer 20 minutes until tender.", "Serve with bread."]
+      },
+      {
+        id: "rec-041",
+        title: "Creamy Broccoli & Garlic Soup",
+        bases: [1, 4],
+        flavors: ["A"],
+        culture: "Soups, Stews & Chilis",
+        prep: 10,
+        cook: 15,
+        protein: "White Beans",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "2 cubes Base 4", "1 cube Flavor A", "Broccoli", "Broth"],
+        steps: ["Simmer broccoli in broth with Base 1 and Flavor A.", "Stir in Base 4 and blend smooth."]
+      },
+      {
+        id: "rec-042",
+        title: "Hearty Black Bean & Sweet Potato Soup",
+        bases: [2],
+        flavors: ["D"],
+        culture: "Soups, Stews & Chilis",
+        prep: 10,
+        cook: 20,
+        protein: "Black Beans",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 2", "2 cubes Flavor D", "Sweet potatoes", "Black beans", "Broth"],
+        steps: ["Simmer sweet potatoes and beans in broth with cubes.", "Lightly mash to thicken.", "Serve with cilantro."]
+      },
+      {
+        id: "rec-043",
+        title: "Creamy Wild Mushroom Soup",
+        bases: [1, 4],
+        flavors: ["A"],
+        culture: "Soups, Stews & Chilis",
+        prep: 10,
+        cook: 20,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["1 cube Base 1", "2 cubes Base 4", "1 cube Flavor A", "Mushrooms", "Broth"],
+        steps: ["Sauté mushrooms with Base 1 and Flavor A.", "Add broth and simmer.", "Stir in Base 4 and blend partially."]
+      },
+      {
+        id: "rec-044",
+        title: "Provençal White Bean & Escarole Soup",
+        bases: [1, 2],
+        flavors: ["A"],
+        culture: "Soups, Stews & Chilis",
+        prep: 5,
+        cook: 15,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["1 cube Base 1", "1 cube Base 2", "1 cube Flavor A", "Beans", "Escarole"],
+        steps: ["Simmer beans in broth with bases and Flavor A.", "Stir in escarole until wilted.", "Drizzle with olive oil."]
+      },
+      {
+        id: "rec-045",
+        title: "Spicy Tomato & Rice Broth Soup",
+        bases: [2],
+        flavors: ["D"],
+        culture: "Soups, Stews & Chilis",
+        prep: 5,
+        cook: 15,
+        protein: "Chickpeas",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 2", "1 cube Flavor D", "Rice", "Chickpeas", "Broth"],
+        steps: ["Combine broth, rice, chickpeas, Base 2, and Flavor D.", "Simmer 15 minutes until tender.", "Garnish with cilantro."]
+      },
+
+      // --- CATEGORY 4: THAI & INDIAN CURRIES (46-60) ---
+      {
+        id: "rec-046",
+        title: "Authentic Yellow Dhal & Basmati",
+        bases: [1],
+        flavors: ["C"],
+        culture: "Thai & Indian Curries",
+        prep: 5,
+        cook: 20,
+        protein: "Lentils",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 1", "1 cube Flavor C", "Yellow moong dal", "Jasmine rice", "Lemon"],
+        steps: ["Simmer split moong dal with Base 1 and Flavor C for 20 minutes.", "Serve alongside fluffy rice."]
+      },
+      {
+        id: "rec-047",
+        title: "Creamy Chickpea Tikka Masala",
+        bases: [2, 4],
+        flavors: ["C"],
+        culture: "Thai & Indian Curries",
+        prep: 5,
+        cook: 12,
+        protein: "Chickpeas",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 2", "1 cube Base 4", "1 cube Flavor C", "Chickpeas", "Tomatoes", "Rice"],
+        steps: ["Melt bases and Flavor C with crushed tomatoes.", "Simmer chickpeas 10 minutes.", "Serve over warm rice."]
+      },
+      {
+        id: "rec-048",
+        title: "South Indian Green Coconut Curry",
+        bases: [3],
+        flavors: ["C"],
+        culture: "Thai & Indian Curries",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 3", "1 cube Flavor C", "Tofu cubes", "Coconut milk", "Rice"],
+        steps: ["Sauté tofu with Base 3 and Flavor C.", "Pour in coconut milk and simmer 8 minutes.", "Serve over rice."]
+      },
+      {
+        id: "rec-049",
+        title: "Spiced Mustard Seed Potato Hash",
+        bases: [1],
+        flavors: ["C"],
+        culture: "Thai & Indian Curries",
+        prep: 10,
+        cook: 12,
+        protein: "Chickpeas",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "1 cube Flavor C", "Boiled potatoes", "Green peas"],
+        steps: ["Sauté potatoes and peas until golden.", "Drop in melted Base 1 and Flavor C.", "Toss until fragrant."]
+      },
+      {
+        id: "rec-050",
+        title: "Tom Kha Style Coconut Soup",
+        bases: [1],
+        flavors: ["B"],
+        culture: "Thai & Indian Curries",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 1", "1 cube Flavor B", "Mushrooms", "Broth", "Lime juice"],
+        steps: ["Simmer mushrooms in broth with Base 1 and Flavor B.", "Stir in lime juice and serve over rice."]
+      },
+      {
+        id: "rec-051",
+        title: "Rich Massaman-Style Grain Skillet",
+        bases: [2],
+        flavors: ["B"],
+        culture: "Thai & Indian Curries",
+        prep: 10,
+        cook: 15,
+        protein: "Tofu",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 2", "1 cube Flavor B", "Sweet potato", "Quinoa", "Peanuts"],
+        steps: ["Simmer sweet potato with Base 2 and Flavor B.", "Fold in cooked quinoa.", "Top with peanuts."]
+      },
+      {
+        id: "rec-052",
+        title: "Fiery Thai Green Curry Skillet",
+        bases: [3],
+        flavors: ["B"],
+        culture: "Thai & Indian Curries",
+        prep: 5,
+        cook: 10,
+        protein: "Tempeh",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 3", "1 cube Flavor B", "Tempeh", "Snap peas", "Rice"],
+        steps: ["Sauté tempeh and snap peas with Base 3 and Flavor B.", "Add water to create glossy sauce; serve over rice."]
+      },
+      {
+        id: "rec-053",
+        title: "Lemongrass Fried Rice",
+        bases: [1],
+        flavors: ["B"],
+        culture: "Thai & Indian Curries",
+        prep: 5,
+        cook: 8,
+        protein: "Tofu",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 1", "1 cube Flavor B", "Cold rice", "Edamame", "Scallions"],
+        steps: ["Sauté edamame with Base 1 and Flavor B.", "Add cold rice and stir-fry 5 minutes.", "Garnish with scallions."]
+      },
+      {
+        id: "rec-054",
+        title: "Tempered Chickpea Curry",
+        bases: [2],
+        flavors: ["C"],
+        culture: "Thai & Indian Curries",
+        prep: 5,
+        cook: 12,
+        protein: "Chickpeas",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 2", "1 cube Flavor C", "Chickpeas", "Broth", "Rice"],
+        steps: ["Simmer chickpeas with broth, Base 2, and Flavor C.", "Mash half the beans to thicken.", "Serve over rice."]
+      },
+      {
+        id: "rec-055",
+        title: "Spiced Mustard Seed Cabbage Rice",
+        bases: [1],
+        flavors: ["C"],
+        culture: "Thai & Indian Curries",
+        prep: 5,
+        cook: 10,
+        protein: "Chickpeas",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 1", "1 cube Flavor C", "Shredded cabbage", "Basmati rice"],
+        steps: ["Sauté cabbage with Base 1 and Flavor C.", "Fold in cooked rice until warm and golden."]
+      },
+      {
+        id: "rec-056",
+        title: "Creamy Korma-Style Tofu Skillet",
+        bases: [4],
+        flavors: ["C"],
+        culture: "Thai & Indian Curries",
+        prep: 5,
+        cook: 12,
+        protein: "Tofu",
+        starch: "Jasmine Rice",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor C", "Tofu cubes", "Peas", "Rice"],
+        steps: ["Pan-sear tofu cubes.", "Drop in Base 4, Flavor C, and peas with water.", "Simmer until creamy."]
+      },
+      {
+        id: "rec-057",
+        title: "Lemongrass Rice Noodle Broth Soup",
+        bases: [3],
+        flavors: ["B"],
+        culture: "Thai & Indian Curries",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Lo Mein",
+        ingredients: ["1 cube Base 3", "1 cube Flavor B", "Rice noodles", "Broth", "Bok choy"],
+        steps: ["Simmer broth with Base 3 and Flavor B.", "Add noodles and bok choy; cook 5 minutes."]
+      },
+      {
+        id: "rec-058",
+        title: "Spiced Quinoa Pilaf with Cashews",
+        bases: [1],
+        flavors: ["C"],
+        culture: "Thai & Indian Curries",
+        prep: 5,
+        cook: 12,
+        protein: "Chickpeas",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 1", "1 cube Flavor C", "Quinoa", "Cashews", "Broth"],
+        steps: ["Sauté dry quinoa with Base 1 and Flavor C.", "Add broth and simmer 12 minutes; top with cashews."]
+      },
+      {
+        id: "rec-059",
+        title: "Thai Red Coconut Noodle Toss",
+        bases: [4],
+        flavors: ["B"],
+        culture: "Thai & Indian Curries",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Lo Mein",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor B", "Noodles", "Bell peppers"],
+        steps: ["Boil noodles; reserve water.", "Melt Base 4 and Flavor B with peppers and water.", "Toss noodles in sauce."]
+      },
+      {
+        id: "rec-060",
+        title: "South Indian Lentil & Spinach Soup",
+        bases: [2],
+        flavors: ["C"],
+        culture: "Thai & Indian Curries",
+        prep: 5,
+        cook: 20,
+        protein: "Lentils",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 2", "1 cube Flavor C", "Red lentils", "Spinach", "Broth"],
+        steps: ["Simmer lentils in broth with Base 2 and Flavor C.", "Stir in spinach until wilted."]
+      },
+
+      // --- CATEGORY 5: EAST ASIAN STIR-FRIES (61-75) ---
+      {
+        id: "rec-061",
+        title: "Ginger-Scallion Lo Mein",
+        bases: [1],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 8,
+        protein: "Tofu",
+        starch: "Lo Mein",
+        ingredients: ["1 cube Base 1", "1 cube Flavor B", "Lo mein noodles", "Snap peas", "Tofu"],
+        steps: ["Boil noodles; drain.", "Sauté snap peas and tofu with Base 1 and Flavor B.", "Toss noodles in wok."]
+      },
+      {
+        id: "rec-062",
+        title: "Garlic-Ginger Rice Porridge (Congee)",
+        bases: [1],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 30,
+        protein: "Tofu",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 1", "1 cube Flavor B", "Jasmine rice", "Broth", "Crispy shallots"],
+        steps: ["Simmer rice and broth with Base 1 and Flavor B for 30 minutes.", "Top with shallots."]
+      },
+      {
+        id: "rec-063",
+        title: "Herb-Infused Ginger Fried Rice",
+        bases: [3],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 8,
+        protein: "Tofu",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 3", "1 cube Flavor B", "Cold rice", "Green peas", "Tofu"],
+        steps: ["Sauté tofu and peas with Base 3 and Flavor B.", "Add cold rice and stir-fry until crisp."]
+      },
+      {
+        id: "rec-064",
+        title: "Rich Umami Soba Noodle Toss",
+        bases: [2],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 8,
+        protein: "Tofu",
+        starch: "Soba Noodles",
+        ingredients: ["1 cube Base 2", "1 cube Flavor B", "Soba noodles", "Broccoli", "Mushrooms"],
+        steps: ["Boil soba noodles; rinse cold.", "Sauté broccoli and mushrooms with Base 2 and Flavor B.", "Toss noodles."]
+      },
+      {
+        id: "rec-065",
+        title: "Creamy Miso-Style Udon Noodle Soup",
+        bases: [4],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Lo Mein",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor B", "Udon noodles", "Broth", "Bok choy"],
+        steps: ["Simmer broth with Base 4 and Flavor B.", "Add udon and bok choy; simmer 5 minutes."]
+      },
+      {
+        id: "rec-066",
+        title: "Ginger-Soy Stir-Fried Rice Cakes",
+        bases: [1],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 8,
+        protein: "Tofu",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 1", "1 cube Flavor B", "Rice cakes", "Napa cabbage"],
+        steps: ["Sauté cabbage and soaked rice cakes with Base 1 and Flavor B.", "Cover 3 minutes until tender."]
+      },
+      {
+        id: "rec-067",
+        title: "Sesame-Ginger Quinoa Crunch Bowl",
+        bases: [3],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 10,
+        cook: 12,
+        protein: "Tofu",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 3", "1 cube Flavor B", "Quinoa", "Purple cabbage", "Peanuts"],
+        steps: ["Whisk melted bases with water for dressing.", "Toss quinoa and cabbage in dressing; top with peanuts."]
+      },
+      {
+        id: "rec-068",
+        title: "Ginger & Mushroom Ramen Broth",
+        bases: [2],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 12,
+        protein: "Tofu",
+        starch: "Lo Mein",
+        ingredients: ["1 cube Base 2", "1 cube Flavor B", "Ramen noodles", "Mushrooms", "Broth"],
+        steps: ["Simmer mushrooms in broth with Base 2 and Flavor B.", "Ladle over cooked ramen."]
+      },
+      {
+        id: "rec-069",
+        title: "Savory Scallion & White Bean Skillet",
+        bases: [1],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 10,
+        protein: "White Beans",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 1", "1 cube Flavor B", "White beans", "Spinach", "Sesame seeds"],
+        steps: ["Sauté beans with Base 1 and Flavor B.", "Fold in spinach.", "Garnish with sesame seeds."]
+      },
+      {
+        id: "rec-070",
+        title: "Creamy Sesame-Ginger Udon Noodles",
+        bases: [4],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 8,
+        protein: "Tofu",
+        starch: "Lo Mein",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor B", "Udon noodles", "Snap peas", "Peanuts"],
+        steps: ["Boil noodles.", "Melt Base 4 and Flavor B with snap peas and water.", "Toss noodles and top with peanuts."]
+      },
+      {
+        id: "rec-071",
+        title: "Lemongrass Tofu & Broccoli Wok",
+        bases: [1],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 1", "1 cube Flavor B", "Tofu", "Broccoli", "Rice"],
+        steps: ["Sauté tofu and broccoli with Base 1 and Flavor B.", "Serve over warm rice."]
+      },
+      {
+        id: "rec-072",
+        title: "Sesame Edamame Rice Bowl",
+        bases: [3],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 8,
+        protein: "Tofu",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 3", "1 cube Flavor B", "Edamame", "Rice", "Scallions"],
+        steps: ["Sauté edamame with Base 3 and Flavor B.", "Serve over rice with scallions."]
+      },
+      {
+        id: "rec-073",
+        title: "Miso-Ginger Soba Crunch",
+        bases: [4],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 8,
+        protein: "Tofu",
+        starch: "Soba Noodles",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor B", "Soba noodles", "Cabbage"],
+        steps: ["Toss cooked soba noodles in melted Base 4 and Flavor B with shredded cabbage."]
+      },
+      {
+        id: "rec-074",
+        title: "Spicy Garlic-Ginger Rice Cakes",
+        bases: [2],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 2", "1 cube Flavor B", "Rice cakes", "Spinach"],
+        steps: ["Simmer rice cakes with Base 2 and Flavor B until chewy and tender."]
+      },
+      {
+        id: "rec-075",
+        title: "Ginger-Sesame Mushroom Skillet",
+        bases: [1],
+        flavors: ["B"],
+        culture: "East Asian Stir-Fries",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 1", "1 cube Flavor B", "Mushrooms", "Quinoa"],
+        steps: ["Sauté sliced mushrooms with Base 1 and Flavor B.", "Serve over quinoa."]
+      },
+
+      // --- CATEGORY 6: BISTRO & STEAKHOUSE (76-90) ---
+      {
+        id: "rec-076",
+        title: "Pan-Seared Steak & Garlic Potatoes",
+        bases: [2],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 10,
+        cook: 15,
+        protein: "Steak",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 2", "1 cube Flavor A", "Steak or seitan", "Potatoes", "Red wine"],
+        steps: ["Sear steak and potatoes; set aside.", "Drop Base 2 and Flavor A into drippings with red wine.", "Whisk into sauce."]
+      },
+      {
+        id: "rec-077",
+        title: "French Onion White Bean Skillet",
+        bases: [1, 2],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 10,
+        cook: 20,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["1 cube Base 1", "1 cube Base 2", "1 cube Flavor A", "White beans", "Sourdough"],
+        steps: ["Sauté beans with Base 1, Base 2, and Flavor A until bubbling.", "Serve over sourdough toast."]
+      },
+      {
+        id: "rec-078",
+        title: "Bistro Pan-Roasted Mushrooms & Polenta",
+        bases: [1],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 10,
+        cook: 15,
+        protein: "White Beans",
+        starch: "Polenta",
+        ingredients: ["1 cube Base 1", "1 cube Flavor A", "Mushrooms", "Polenta", "Thyme"],
+        steps: ["Sauté mushrooms with Base 1 and Flavor A.", "Pan-fry polenta slices and top with mushrooms."]
+      },
+      {
+        id: "rec-079",
+        title: "Red Wine Braised Lentil Shepherd's Pie",
+        bases: [2],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 15,
+        cook: 30,
+        protein: "Lentils",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 2", "2 cubes Flavor A", "Lentils", "Carrots", "Mashed potatoes"],
+        steps: ["Mix lentils, carrots, Base 2, and Flavor A in baking dish.", "Top with mashed potatoes and bake at 400°F."]
+      },
+      {
+        id: "rec-080",
+        title: "Creamy Peppercorn & Garlic Pasta",
+        bases: [4],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 5,
+        cook: 10,
+        protein: "White Beans",
+        starch: "Pasta",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor A", "Pasta", "Black pepper"],
+        steps: ["Boil pasta; reserve water.", "Melt Base 4 and Flavor A with water and black pepper.", "Toss pasta."]
+      },
+      {
+        id: "rec-081",
+        title: "Pub-Style Garlic & Herb Potato Hash",
+        bases: [1],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 10,
+        cook: 15,
+        protein: "Eggs",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "1 cube Flavor A", "Potatoes", "Rosemary", "Eggs"],
+        steps: ["Sauté potato cubes until crispy.", "Toss with Base 1, Flavor A, and rosemary; top with eggs."]
+      },
+      {
+        id: "rec-082",
+        title: "Red Wine Reduction Farro Risotto",
+        bases: [2],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 10,
+        cook: 25,
+        protein: "White Beans",
+        starch: "Farro",
+        ingredients: ["1 cube Base 2", "1 cube Flavor A", "Farro", "Mushrooms", "Broth"],
+        steps: ["Sauté mushrooms with Base 2 and Flavor A.", "Add farro and gradually ladle broth."]
+      },
+      {
+        id: "rec-083",
+        title: "Creamy Garlic & Herb White Bean Mash",
+        bases: [4],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 5,
+        cook: 10,
+        protein: "White Beans",
+        starch: "Crispy Potatoes",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor A", "Cannellini beans", "Water"],
+        steps: ["Warm beans in pot with Base 4, Flavor A, and water.", "Mash until smooth and creamy."]
+      },
+      {
+        id: "rec-084",
+        title: "Steakhouse Butter Glazed Roasted Carrots",
+        bases: [1],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 10,
+        cook: 20,
+        protein: "Chickpeas",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 1", "1 cube Flavor A", "Carrots", "Olive oil"],
+        steps: ["Roast carrots at 400°F.", "Melt Base 1 and Flavor A in pan and toss carrots in glaze."]
+      },
+      {
+        id: "rec-085",
+        title: "Bistro Thyme & Onion Gravy over Noodles",
+        bases: [2],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Lo Mein",
+        ingredients: ["2 cubes Base 2", "1 cube Flavor A", "Broth", "Noodles"],
+        steps: ["Simmer Base 2, Flavor A, and broth into thick gravy.", "Pour over warm noodles."]
+      },
+      {
+        id: "rec-086",
+        title: "Garlic Butter Roasted Potato & Chickpea Skillet",
+        bases: [1],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 10,
+        cook: 15,
+        protein: "Chickpeas",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "1 cube Flavor A", "Potatoes", "Chickpeas"],
+        steps: ["Sauté potatoes and chickpeas until crispy.", "Toss with melted Base 1 and Flavor A."]
+      },
+      {
+        id: "rec-087",
+        title: "Creamy Thyme Mushroom Farro",
+        bases: [4],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 10,
+        cook: 20,
+        protein: "White Beans",
+        starch: "Farro",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor A", "Farro", "Mushrooms"],
+        steps: ["Cook farro in broth.", "Stir in sautéed mushrooms, Base 4, and Flavor A until creamy."]
+      },
+      {
+        id: "rec-088",
+        title: "Rosemary White Bean Bistro Toast",
+        bases: [1],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 5,
+        cook: 10,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["1 cube Base 1", "1 cube Flavor A", "White beans", "Sourdough", "Rosemary"],
+        steps: ["Warm white beans with Base 1, Flavor A, and rosemary.", "Spoon over toasted sourdough."]
+      },
+      {
+        id: "rec-089",
+        title: "Bistro Peppercorn Lentil Skillet",
+        bases: [2],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 5,
+        cook: 15,
+        protein: "Lentils",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 2", "1 cube Flavor A", "Lentils", "Broth"],
+        steps: ["Simmer lentils in broth with Base 2 and Flavor A until reduced and glossy."]
+      },
+      {
+        id: "rec-090",
+        title: "Garlic Herb Polenta & Beans",
+        bases: [1],
+        flavors: ["A"],
+        culture: "Bistro & Steakhouse",
+        prep: 5,
+        cook: 10,
+        protein: "White Beans",
+        starch: "Polenta",
+        ingredients: ["1 cube Base 1", "1 cube Flavor A", "White beans", "Polenta"],
+        steps: ["Sauté beans with Base 1 and Flavor A.", "Serve over pan-fried polenta rounds."]
+      },
+
+      // --- CATEGORY 7: CROSS-CULTURAL FUSION (91-122) ---
+      {
+        id: "rec-091",
+        title: "Thai-Mexican Verde Noodle Soup",
+        bases: [3],
+        flavors: ["B", "D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Lo Mein",
+        ingredients: ["1 cube Base 3", "1 cube Flavor B", "1 cube Flavor D", "Noodles", "Broth"],
+        steps: ["Simmer broth with fusion blocks.", "Add noodles and tofu; cook 5 minutes."]
+      },
+      {
+        id: "rec-092",
+        title: "Curried French Onion Soup",
+        bases: [1, 2],
+        flavors: ["C"],
+        culture: "Cross-Cultural Fusion",
+        prep: 10,
+        cook: 20,
+        protein: "Lentils",
+        starch: "Sourdough",
+        ingredients: ["1 cube Base 1", "1 cube Base 2", "1 cube Flavor C", "Broth", "Bread"],
+        steps: ["Simmer broth with bases and Flavor C for 15 minutes.", "Top with bread and broil."]
+      },
+      {
+        id: "rec-093",
+        title: "Savory Ginger-Adobo Grain Bowl",
+        bases: [1],
+        flavors: ["B", "D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 10,
+        cook: 15,
+        protein: "Tofu",
+        starch: "Farro",
+        ingredients: ["1 cube Base 1", "1 cube Flavor B", "1 cube Flavor D", "Farro", "Cauliflower"],
+        steps: ["Sauté cauliflower with melted bases and adobo.", "Serve over farro."]
+      },
+      {
+        id: "rec-094",
+        title: "Creamy Harissa-Style Pasta",
+        bases: [4],
+        flavors: ["D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 10,
+        protein: "White Beans",
+        starch: "Pasta",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor D", "Pasta", "White beans"],
+        steps: ["Boil pasta; reserve water.", "Melt Base 4 and Flavor D with water and white beans.", "Toss pasta."]
+      },
+      {
+        id: "rec-095",
+        title: "Triple-Base Ultimate Umami Stew",
+        bases: [1, 2, 3],
+        flavors: ["C"],
+        culture: "Cross-Cultural Fusion",
+        prep: 10,
+        cook: 25,
+        protein: "Lentils",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "1 cube Base 2", "1 cube Base 3", "1 cube Flavor C", "Lentils", "Potatoes"],
+        steps: ["Combine all structural bases, masala, lentils, and potatoes in pot with broth.", "Simmer 25 minutes."]
+      },
+      {
+        id: "rec-096",
+        title: "Lemongrass-Adobo Glazed Tofu Skillet",
+        bases: [3],
+        flavors: ["B", "D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 3", "1 cube Flavor B", "1 cube Flavor D", "Tofu", "Rice"],
+        steps: ["Pan-sear tofu.", "Drop in Base 3, Flavor B, and Flavor D with water; coat tofu and serve over rice."]
+      },
+      {
+        id: "rec-097",
+        title: "Spiced Masala & Bistro Potato Hash",
+        bases: [1],
+        flavors: ["A", "C"],
+        culture: "Cross-Cultural Fusion",
+        prep: 10,
+        cook: 15,
+        protein: "Chickpeas",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "1 cube Flavor A", "1 cube Flavor C", "Potatoes", "Peas"],
+        steps: ["Sauté potatoes and peas until crisp.", "Toss with melted Base 1, Flavor A, and Flavor C."]
+      },
+      {
+        id: "rec-098",
+        title: "Miso-Adobo Fusion Grain Skillet",
+        bases: [2],
+        flavors: ["B", "D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 10,
+        protein: "Black Beans",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 2", "1 cube Flavor B", "1 cube Flavor D", "Quinoa", "Black beans"],
+        steps: ["Warm black beans with Base 2, Flavor B, and Flavor D.", "Fold in quinoa and serve."]
+      },
+      {
+        id: "rec-099",
+        title: "Creamy Masala-Bistro Pasta Toss",
+        bases: [4],
+        flavors: ["A", "C"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 10,
+        protein: "White Beans",
+        starch: "Pasta",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor A", "1 cube Flavor C", "Pasta"],
+        steps: ["Boil pasta.", "Melt Base 4, Flavor A, and Flavor C with pasta water.", "Toss pasta until glossy."]
+      },
+      {
+        id: "rec-100",
+        title: "Citrus-Adobo Green Bean Stir-Fry",
+        bases: [3],
+        flavors: ["D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 8,
+        protein: "Tofu",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 3", "1 cube Flavor D", "Green beans", "Peanuts"],
+        steps: ["Sauté green beans with Base 3 and Flavor D.", "Top with peanuts and serve over rice."]
+      },
+      {
+        id: "rec-101",
+        title: "Ginger-Scallion Masala Rice Skillet",
+        bases: [1],
+        flavors: ["B", "C"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 8,
+        protein: "Chickpeas",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 1", "1 cube Flavor B", "1 cube Flavor C", "Rice", "Edamame"],
+        steps: ["Sauté edamame with bases and masala.", "Add rice and stir-fry."]
+      },
+      {
+        id: "rec-102",
+        title: "Creamy Lemon-Adobo White Bean Skillet",
+        bases: [4],
+        flavors: ["D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 10,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor D", "White beans", "Spinach"],
+        steps: ["Simmer beans with Base 4 and Flavor D.", "Fold in spinach and serve with bread."]
+      },
+      {
+        id: "rec-103",
+        title: "Bistro-Adobo Roasted Cauliflower Bowls",
+        bases: [2],
+        flavors: ["A", "D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 10,
+        cook: 20,
+        protein: "Chickpeas",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 2", "1 cube Flavor A", "1 cube Flavor D", "Cauliflower", "Quinoa"],
+        steps: ["Toss cauliflower in melted bases and adobo; roast at 400°F.", "Serve over quinoa."]
+      },
+      {
+        id: "rec-104",
+        title: "Lemongrass-Masala Lentil Stew",
+        bases: [2],
+        flavors: ["B", "C"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 20,
+        protein: "Lentils",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 2", "1 cube Flavor B", "1 cube Flavor C", "Lentils", "Broth"],
+        steps: ["Simmer lentils with broth, Base 2, Flavor B, and Flavor C for 20 minutes."]
+      },
+      {
+        id: "rec-105",
+        title: "Green Citrus Bistro Grain Salad",
+        bases: [3],
+        flavors: ["A"],
+        culture: "Cross-Cultural Fusion",
+        prep: 10,
+        cook: 15,
+        protein: "Chickpeas",
+        starch: "Farro",
+        ingredients: ["1 cube Base 3", "1 cube Flavor A", "Farro", "Cucumbers", "Tomatoes"],
+        steps: ["Whisk melted Base 3 and Flavor A with olive oil for dressing.", "Toss warm farro in dressing."]
+      },
+      {
+        id: "rec-106",
+        title: "Creamy Ginger-Bistro Noodle Toss",
+        bases: [4],
+        flavors: ["A", "B"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 8,
+        protein: "Tofu",
+        starch: "Lo Mein",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor A", "1 cube Flavor B", "Noodles"],
+        steps: ["Boil noodles.", "Melt Base 4, Flavor A, and Flavor B with water and toss noodles."]
+      },
+      {
+        id: "rec-107",
+        title: "Adobo-Masala Chickpea Skillet",
+        bases: [2],
+        flavors: ["C", "D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 10,
+        protein: "Chickpeas",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 2", "1 cube Flavor C", "1 cube Flavor D", "Chickpeas", "Rice"],
+        steps: ["Sauté chickpeas with Base 2, masala, and adobo.", "Serve over warm rice."]
+      },
+      {
+        id: "rec-108",
+        title: "Triple-Flavor Roasted Potato Skillet",
+        bases: [1],
+        flavors: ["A", "C"],
+        culture: "Cross-Cultural Fusion",
+        prep: 10,
+        cook: 15,
+        protein: "Chickpeas",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "1 cube Flavor A", "1 cube Flavor C", "Potatoes"],
+        steps: ["Sauté potato cubes until golden.", "Melt Base 1, Flavor A, and Flavor C over potatoes."]
+      },
+      {
+        id: "rec-109",
+        title: "Velvet Coconut-Adobo Rice Bowl",
+        bases: [4],
+        flavors: ["B", "D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 10,
+        protein: "Black Beans",
+        starch: "Jasmine Rice",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor B", "1 cube Flavor D", "Black beans", "Rice"],
+        steps: ["Warm black beans with Base 4, Flavor B, and Flavor D.", "Serve over rice."]
+      },
+      {
+        id: "rec-110",
+        title: "Ultimate Global Fusion Bowl",
+        bases: [1, 2, 3],
+        flavors: ["A", "B", "C", "D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 10,
+        cook: 15,
+        protein: "Tofu",
+        starch: "Quinoa",
+        ingredients: ["Sliver of all bases & boosters", "Quinoa", "Roasted veggies"],
+        steps: ["Melt tiny portions of all 8 cubes in pan with broth for master sauce.", "Toss quinoa and veggies."]
+      },
+      {
+        id: "rec-111",
+        title: "Spiced Masala White Bean Mash",
+        bases: [4],
+        flavors: ["C"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 10,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["2 cubes Base 4", "1 cube Flavor C", "White beans", "Bread"],
+        steps: ["Warm beans with Base 4 and Flavor C.", "Mash thoroughly and serve on sourdough."]
+      },
+      {
+        id: "rec-112",
+        title: "Green Curry White Bean Skillet",
+        bases: [3],
+        flavors: ["B"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 10,
+        protein: "White Beans",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 3", "1 cube Flavor B", "White beans", "Rice"],
+        steps: ["Simmer white beans with Base 3 and Flavor B until creamy.", "Serve over rice."]
+      },
+      {
+        id: "rec-113",
+        title: "Adobo Bistro Roasted Potatoes",
+        bases: [1],
+        flavors: ["A", "D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 10,
+        cook: 20,
+        protein: "Chickpeas",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "1 cube Flavor A", "1 cube Flavor D", "Potatoes"],
+        steps: ["Toss potatoes in melted Base 1, Flavor A, and Flavor D; roast at 400°F."]
+      },
+      {
+        id: "rec-114",
+        title: "Lemongrass Tomato Lentil Soup",
+        bases: [2],
+        flavors: ["B"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 20,
+        protein: "Lentils",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 2", "1 cube Flavor B", "Lentils", "Broth"],
+        steps: ["Simmer lentils in broth with Base 2 and Flavor B until thick and fragrant."]
+      },
+      {
+        id: "rec-115",
+        title: "Creamy Masala Potato Chowder",
+        bases: [1, 4],
+        flavors: ["C"],
+        culture: "Cross-Cultural Fusion",
+        prep: 10,
+        cook: 20,
+        protein: "White Beans",
+        starch: "Crispy Potatoes",
+        ingredients: ["1 cube Base 1", "2 cubes Base 4", "1 cube Flavor C", "Potatoes", "Broth"],
+        steps: ["Simmer potatoes in broth with Base 1 and Flavor C.", "Stir in Base 4 and blend half."]
+      },
+      {
+        id: "rec-116",
+        title: "Bistro-Adobo Black Bean Tacos",
+        bases: [2],
+        flavors: ["A", "D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 10,
+        protein: "Black Beans",
+        starch: "Tortillas",
+        ingredients: ["1 cube Base 2", "1 cube Flavor A", "1 cube Flavor D", "Black beans", "Tortillas"],
+        steps: ["Simmer black beans with Base 2, Flavor A, and Flavor D.", "Spoon into warm tortillas."]
+      },
+      {
+        id: "rec-117",
+        title: "Ginger Citrus Chickpea Salad",
+        bases: [3],
+        flavors: ["B"],
+        culture: "Cross-Cultural Fusion",
+        prep: 10,
+        cook: 10,
+        protein: "Chickpeas",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 3", "1 cube Flavor B", "Chickpeas", "Quinoa", "Cabbage"],
+        steps: ["Whisk Base 3 and Flavor B for dressing.", "Toss warm quinoa, chickpeas, and cabbage."]
+      },
+      {
+        id: "rec-118",
+        title: "Masala Bistro Tofu Skillet",
+        bases: [1],
+        flavors: ["A", "C"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 12,
+        protein: "Tofu",
+        starch: "Jasmine Rice",
+        ingredients: ["1 cube Base 1", "1 cube Flavor A", "1 cube Flavor C", "Tofu", "Rice"],
+        steps: ["Sauté tofu with Base 1, Flavor A, and Flavor C.", "Serve over rice."]
+      },
+      {
+        id: "rec-119",
+        title: "Velvet Adobo White Bean Soup",
+        bases: [2, 4],
+        flavors: ["D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 15,
+        protein: "White Beans",
+        starch: "Sourdough",
+        ingredients: ["1 cube Base 2", "2 cubes Base 4", "1 cube Flavor D", "White beans", "Broth"],
+        steps: ["Simmer beans in broth with Base 2 and Flavor D.", "Stir in Base 4 velvet cream."]
+      },
+      {
+        id: "rec-120",
+        title: "Lemongrass Bistro Noodle Bowl",
+        bases: [1],
+        flavors: ["A", "B"],
+        culture: "Cross-Cultural Fusion",
+        prep: 5,
+        cook: 10,
+        protein: "Tofu",
+        starch: "Lo Mein",
+        ingredients: ["1 cube Base 1", "1 cube Flavor A", "1 cube Flavor B", "Noodles"],
+        steps: ["Boil noodles.", "Toss in pan with melted Base 1, Flavor A, and Flavor B."]
+      },
+      {
+        id: "rec-121",
+        title: "Green Citrus Masala Grain Bowl",
+        bases: [3],
+        flavors: ["C"],
+        culture: "Cross-Cultural Fusion",
+        prep: 10,
+        cook: 12,
+        protein: "Chickpeas",
+        starch: "Quinoa",
+        ingredients: ["1 cube Base 3", "1 cube Flavor C", "Quinoa", "Chickpeas"],
+        steps: ["Warm chickpeas with Base 3 and Flavor C.", "Serve over quinoa."]
+      },
+      {
+        id: "rec-122",
+        title: "Master Matrix Fusion Stew",
+        bases: [1, 2, 3, 4],
+        flavors: ["A", "B", "C", "D"],
+        culture: "Cross-Cultural Fusion",
+        prep: 10,
+        cook: 25,
+        protein: "Lentils",
+        starch: "Farro",
+        ingredients: ["All 4 bases", "All 4 boosters", "Lentils", "Farro", "Broth"],
+        steps: ["Combine all 8 blocks in pot with broth, lentils, and farro.", "Simmer 25 minutes into master stew."]
+      }
+    ];
+
+    // UI Configuration
     const BASE_DEFS = [
       { id: 1, name: 'Base 1: Clean Mirepoix', short: 'B1: Mirepoix', color: 'bg-amber-500/10 border-amber-500/40 text-amber-400 hover:bg-amber-500/20', activeBg: 'bg-amber-500 text-slate-950 font-bold border-amber-400', icon: 'fa-seedling' },
       { id: 2, name: 'Base 2: Allium Jam', short: 'B2: Allium Jam', color: 'bg-red-500/10 border-red-500/40 text-red-400 hover:bg-red-500/20', activeBg: 'bg-red-500 text-white font-bold border-red-400', icon: 'fa-apple-whole' },
@@ -414,23 +2022,14 @@
       { id: 'D', name: 'Flavor D: Latin Adobo', short: 'FD: Latin Adobo', color: 'bg-pink-500/10 border-pink-500/40 text-pink-400 hover:bg-pink-500/20', activeBg: 'bg-pink-500 text-white font-bold border-pink-400', icon: 'fa-fire' }
     ];
 
-    const TIME_BRACKETS = [
-      { id: '0-10m', label: '0–10 mins' },
-      { id: '10-30m', label: '10–30 mins' },
-      { id: '30+m', label: '30+ mins' }
-    ];
-
-    const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack'];
     const REGIONS = ["Greek & Mediterranean", "Mexican & Tex-Mex", "Soups, Stews & Chilis", "Thai & Indian Curries", "East Asian Stir-Fries", "Bistro & Steakhouse", "Cross-Cultural Fusion"];
-    const PROTEINS = ["Chicken", "Ground Meat", "Turkey", "Eggs", "Tofu", "White Beans", "Chickpeas", "Lentils", "Black Beans", "Pinto Beans", "Tempeh", "Seitan", "Steak"];
+    const PROTEINS = ["Tofu", "White Beans", "Chickpeas", "Lentils", "Black Beans", "Pinto Beans", "Tempeh", "Seitan", "Steak", "Eggs"];
     const STARCHES = ["Jasmine Rice", "Sourdough", "Orzo", "Soba Noodles", "Crispy Potatoes", "Quinoa", "Lo Mein", "Tortillas", "Polenta", "Farro", "Pasta"];
 
-    // App State
+    // State
     const state = {
       selectedBases: [],
       selectedFlavors: [],
-      selectedTimes: [],
-      selectedMeals: [],
       selectedRegions: [],
       selectedProteins: [],
       selectedStarches: [],
@@ -441,8 +2040,6 @@
     // DOM Elements
     const basesContainer = document.getElementById('basesContainer');
     const flavorsContainer = document.getElementById('flavorsContainer');
-    const timeContainer = document.getElementById('timeContainer');
-    const mealContainer = document.getElementById('mealContainer');
     const regionsContainer = document.getElementById('regionsContainer');
     const proteinsContainer = document.getElementById('proteinsContainer');
     const starchesContainer = document.getElementById('starchesContainer');
@@ -458,12 +2055,19 @@
     const matchCounter = document.getElementById('matchCounter');
     const activeCountBadge = document.getElementById('activeCountBadge');
     const sortSelect = document.getElementById('sortSelect');
-    const importFile = document.getElementById('importFile');
 
     const recipeModal = document.getElementById('recipeModal');
     const modalContainer = document.getElementById('modalContainer');
+
     const shoppingModal = document.getElementById('shoppingModal');
     const shoppingModalContainer = document.getElementById('shoppingModalContainer');
+    const openShoppingListBtn = document.getElementById('openShoppingListBtn');
+    const closeShoppingModalBtn = document.getElementById('closeShoppingModalBtn');
+    const closeShoppingModalFooterBtn = document.getElementById('closeShoppingModalFooterBtn');
+    const tabTier1Btn = document.getElementById('tabTier1Btn');
+    const tabTier2Btn = document.getElementById('tabTier2Btn');
+    const tier1Content = document.getElementById('tier1Content');
+    const tier2Content = document.getElementById('tier2Content');
 
     function initControls() {
       basesContainer.innerHTML = BASE_DEFS.map(b => `
@@ -480,38 +2084,21 @@
         </button>
       `).join('');
 
-      timeContainer.innerHTML = TIME_BRACKETS.map(t => `
-        <button data-value="${t.id}" class="chip-time px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition flex items-center justify-between">
-          <span>${t.label}</span>
-          <i class="fa-solid fa-check text-[10px] opacity-0 check-icon"></i>
-        </button>
-      `).join('');
-
-      mealContainer.innerHTML = MEAL_TYPES.map(m => `
-        <button data-value="${m}" class="chip-meal px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium capitalize transition flex items-center justify-between">
-          <span>${m}</span>
-          <i class="fa-solid fa-check text-[10px] opacity-0 check-icon"></i>
-        </button>
-      `).join('');
-
       regionsContainer.innerHTML = REGIONS.map(r => `
-        <button data-value="${r}" class="chip-region px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition flex items-center justify-between">
-          <span class="truncate">${r}</span>
-          <i class="fa-solid fa-check text-[10px] opacity-0 check-icon"></i>
+        <button data-value="${r}" class="chip-region px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition">
+          ${r}
         </button>
       `).join('');
 
       proteinsContainer.innerHTML = PROTEINS.map(p => `
-        <button data-value="${p}" class="chip-protein px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition flex items-center justify-between">
-          <span>${p}</span>
-          <i class="fa-solid fa-check text-[10px] opacity-0 check-icon"></i>
+        <button data-value="${p}" class="chip-protein px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition">
+          ${p}
         </button>
       `).join('');
 
       starchesContainer.innerHTML = STARCHES.map(s => `
-        <button data-value="${s}" class="chip-starch px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition flex items-center justify-between">
-          <span>${s}</span>
-          <i class="fa-solid fa-check text-[10px] opacity-0 check-icon"></i>
+        <button data-value="${s}" class="chip-starch px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition">
+          ${s}
         </button>
       `).join('');
     }
@@ -534,26 +2121,6 @@
         state.selectedFlavors = state.selectedFlavors.includes(id) 
           ? state.selectedFlavors.filter(x => x !== id) 
           : [...state.selectedFlavors, id];
-        updateUI();
-      });
-
-      timeContainer.addEventListener('click', e => {
-        const btn = e.target.closest('.chip-time');
-        if (!btn) return;
-        const val = btn.dataset.value;
-        state.selectedTimes = state.selectedTimes.includes(val) 
-          ? state.selectedTimes.filter(x => x !== val) 
-          : [...state.selectedTimes, val];
-        updateUI();
-      });
-
-      mealContainer.addEventListener('click', e => {
-        const btn = e.target.closest('.chip-meal');
-        if (!btn) return;
-        const val = btn.dataset.value;
-        state.selectedMeals = state.selectedMeals.includes(val) 
-          ? state.selectedMeals.filter(x => x !== val) 
-          : [...state.selectedMeals, val];
         updateUI();
       });
 
@@ -602,42 +2169,15 @@
 
       resetAllBtn.addEventListener('click', resetFilters);
       resetFiltersLink.addEventListener('click', resetFilters);
-      clearActiveStackBtn.addEventListener('click', resetFilters);
+      clearActiveStackBtn.addEventListener('click', () => {
+        state.selectedBases = [];
+        state.selectedFlavors = [];
+        updateUI();
+      });
 
       sortSelect.addEventListener('change', e => {
         state.sortBy = e.target.value;
         renderRecipes();
-      });
-
-      // Recipe Import
-      importFile.addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          try {
-            const imported = JSON.parse(evt.target.result);
-            if (Array.isArray(imported)) {
-              // Augment unique recipes by ID
-              const existingIds = new Set(window.BASE_AND_BOOSTER_RECIPES.map(r => r.id));
-              let addedCount = 0;
-              imported.forEach(r => {
-                if (!existingIds.has(r.id)) {
-                  window.BASE_AND_BOOSTER_RECIPES.push(r);
-                  existingIds.add(r.id);
-                  addedCount++;
-                }
-              });
-              alert(`Successfully imported ${addedCount} new recipes from ${file.name}!`);
-              renderRecipes();
-            } else {
-              alert('Invalid recipe JSON format. Expected an array of recipes.');
-            }
-          } catch (err) {
-            alert('Error parsing JSON file: ' + err.message);
-          }
-        };
-        reader.readAsText(file);
       });
 
       // Modals
@@ -647,37 +2187,31 @@
         if (e.target === recipeModal) closeModal();
       });
 
-      document.getElementById('openShoppingListBtn').addEventListener('click', () => {
-        shoppingModal.classList.remove('opacity-0', 'pointer-events-none');
-        shoppingModalContainer.classList.remove('scale-95');
-        shoppingModalContainer.classList.add('scale-100');
-      });
-      document.getElementById('closeShoppingModalBtn').addEventListener('click', closeShoppingModal);
-      document.getElementById('closeShoppingModalFooterBtn').addEventListener('click', closeShoppingModal);
+      openShoppingListBtn.addEventListener('click', openShoppingModal);
+      closeShoppingModalBtn.addEventListener('click', closeShoppingModal);
+      closeShoppingModalFooterBtn.addEventListener('click', closeShoppingModal);
       shoppingModal.addEventListener('click', e => {
         if (e.target === shoppingModal) closeShoppingModal();
       });
 
-      document.getElementById('tabTier1Btn').addEventListener('click', () => {
-        document.getElementById('tabTier1Btn').className = "pb-3 border-b-2 border-emerald-400 text-emerald-400 font-display font-bold text-sm flex items-center gap-2";
-        document.getElementById('tabTier2Btn').className = "pb-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-display font-bold text-sm flex items-center gap-2";
-        document.getElementById('tier1Content').classList.remove('hidden');
-        document.getElementById('tier2Content').classList.add('hidden');
+      tabTier1Btn.addEventListener('click', () => {
+        tabTier1Btn.className = "pb-3 border-b-2 border-emerald-400 text-emerald-400 font-display font-bold text-sm flex items-center gap-2";
+        tabTier2Btn.className = "pb-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-display font-bold text-sm flex items-center gap-2";
+        tier1Content.classList.remove('hidden');
+        tier2Content.classList.add('hidden');
       });
 
-      document.getElementById('tabTier2Btn').addEventListener('click', () => {
-        document.getElementById('tabTier2Btn').className = "pb-3 border-b-2 border-cyan-400 text-cyan-400 font-display font-bold text-sm flex items-center gap-2";
-        document.getElementById('tabTier1Btn').className = "pb-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-display font-bold text-sm flex items-center gap-2";
-        document.getElementById('tier2Content').classList.remove('hidden');
-        document.getElementById('tier1Content').classList.add('hidden');
+      tabTier2Btn.addEventListener('click', () => {
+        tabTier2Btn.className = "pb-3 border-b-2 border-cyan-400 text-cyan-400 font-display font-bold text-sm flex items-center gap-2";
+        tabTier1Btn.className = "pb-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-display font-bold text-sm flex items-center gap-2";
+        tier2Content.classList.remove('hidden');
+        tier1Content.classList.add('hidden');
       });
     }
 
     function resetFilters() {
       state.selectedBases = [];
       state.selectedFlavors = [];
-      state.selectedTimes = [];
-      state.selectedMeals = [];
       state.selectedRegions = [];
       state.selectedProteins = [];
       state.selectedStarches = [];
@@ -688,7 +2222,6 @@
     }
 
     function updateUI() {
-      // Update Bases
       document.querySelectorAll('.base-btn').forEach(btn => {
         const id = parseInt(btn.dataset.id);
         const def = BASE_DEFS.find(b => b.id === id);
@@ -702,7 +2235,6 @@
         }
       });
 
-      // Update Flavors
       document.querySelectorAll('.flavor-btn').forEach(btn => {
         const id = btn.dataset.id;
         const def = FLAVOR_DEFS.find(f => f.id === id);
@@ -716,74 +2248,29 @@
         }
       });
 
-      // Update Time Filter Chips
-      document.querySelectorAll('.chip-time').forEach(btn => {
-        const val = btn.dataset.value;
-        const check = btn.querySelector('.check-icon');
-        if (state.selectedTimes.includes(val)) {
-          btn.className = 'chip-time px-2.5 py-1.5 rounded-lg border border-indigo-500 bg-indigo-500 text-white text-xs font-bold transition flex items-center justify-between';
-          if (check) check.classList.remove('opacity-0');
-        } else {
-          btn.className = 'chip-time px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition flex items-center justify-between';
-          if (check) check.classList.add('opacity-0');
-        }
-      });
-
-      // Update Meal Filter Chips
-      document.querySelectorAll('.chip-meal').forEach(btn => {
-        const val = btn.dataset.value;
-        const check = btn.querySelector('.check-icon');
-        if (state.selectedMeals.includes(val)) {
-          btn.className = 'chip-meal px-2.5 py-1.5 rounded-lg border border-teal-500 bg-teal-500 text-slate-950 text-xs font-bold capitalize transition flex items-center justify-between';
-          if (check) check.classList.remove('opacity-0');
-        } else {
-          btn.className = 'chip-meal px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium capitalize transition flex items-center justify-between';
-          if (check) check.classList.add('opacity-0');
-        }
-      });
-
-      // Update Region Chips
       document.querySelectorAll('.chip-region').forEach(btn => {
         const val = btn.dataset.value;
-        const check = btn.querySelector('.check-icon');
-        if (state.selectedRegions.includes(val)) {
-          btn.className = 'chip-region px-2.5 py-1.5 rounded-lg border border-blue-500 bg-blue-500 text-white text-xs font-bold transition flex items-center justify-between';
-          if (check) check.classList.remove('opacity-0');
-        } else {
-          btn.className = 'chip-region px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition flex items-center justify-between';
-          if (check) check.classList.add('opacity-0');
-        }
+        btn.className = state.selectedRegions.includes(val)
+          ? 'chip-region px-2.5 py-1 rounded-lg border border-indigo-500 bg-indigo-500 text-white text-xs font-bold transition'
+          : 'chip-region px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition';
       });
 
-      // Update Protein Chips
       document.querySelectorAll('.chip-protein').forEach(btn => {
         const val = btn.dataset.value;
-        const check = btn.querySelector('.check-icon');
-        if (state.selectedProteins.includes(val)) {
-          btn.className = 'chip-protein px-2.5 py-1.5 rounded-lg border border-emerald-500 bg-emerald-500 text-slate-950 text-xs font-bold transition flex items-center justify-between';
-          if (check) check.classList.remove('opacity-0');
-        } else {
-          btn.className = 'chip-protein px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition flex items-center justify-between';
-          if (check) check.classList.add('opacity-0');
-        }
+        btn.className = state.selectedProteins.includes(val)
+          ? 'chip-protein px-2.5 py-1 rounded-lg border border-emerald-500 bg-emerald-500 text-slate-950 text-xs font-bold transition'
+          : 'chip-protein px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition';
       });
 
-      // Update Starch Chips
       document.querySelectorAll('.chip-starch').forEach(btn => {
         const val = btn.dataset.value;
-        const check = btn.querySelector('.check-icon');
-        if (state.selectedStarches.includes(val)) {
-          btn.className = 'chip-starch px-2.5 py-1.5 rounded-lg border border-cyan-500 bg-cyan-500 text-slate-950 text-xs font-bold transition flex items-center justify-between';
-          if (check) check.classList.remove('opacity-0');
-        } else {
-          btn.className = 'chip-starch px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition flex items-center justify-between';
-          if (check) check.classList.add('opacity-0');
-        }
+        btn.className = state.selectedStarches.includes(val)
+          ? 'chip-starch px-2.5 py-1 rounded-lg border border-cyan-500 bg-cyan-500 text-slate-950 text-xs font-bold transition'
+          : 'chip-starch px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition';
       });
 
-      // Active filters banner
-      const hasActive = state.selectedBases.length > 0 || state.selectedFlavors.length > 0 || state.selectedTimes.length > 0 || state.selectedMeals.length > 0 || state.selectedRegions.length > 0 || state.selectedProteins.length > 0 || state.selectedStarches.length > 0;
-      if (hasActive) {
+      const hasActiveStack = state.selectedBases.length > 0 || state.selectedFlavors.length > 0;
+      if (hasActiveStack) {
         activeStackBanner.classList.remove('hidden');
         let badgesHtml = '';
         state.selectedBases.forEach(bId => {
@@ -793,21 +2280,6 @@
         state.selectedFlavors.forEach(fId => {
           const def = FLAVOR_DEFS.find(f => f.id === fId);
           badgesHtml += `<span class="px-2.5 py-0.5 rounded-md text-xs font-bold border ${def.color.split(' hover:')[0]}"><i class="fa-solid ${def.icon} mr-1"></i>${def.short}</span>`;
-        });
-        state.selectedTimes.forEach(t => {
-          badgesHtml += `<span class="px-2.5 py-0.5 rounded-md text-xs font-bold border border-indigo-500/40 bg-indigo-500/10 text-indigo-300">Time: ${t}</span>`;
-        });
-        state.selectedMeals.forEach(m => {
-          badgesHtml += `<span class="px-2.5 py-0.5 rounded-md text-xs font-bold border border-teal-500/40 bg-teal-500/10 text-teal-300 capitalize">Meal: ${m}</span>`;
-        });
-        state.selectedRegions.forEach(r => {
-          badgesHtml += `<span class="px-2.5 py-0.5 rounded-md text-xs font-bold border border-blue-500/40 bg-blue-500/10 text-blue-300">Region: ${r}</span>`;
-        });
-        state.selectedProteins.forEach(p => {
-          badgesHtml += `<span class="px-2.5 py-0.5 rounded-md text-xs font-bold border border-emerald-500/40 bg-emerald-500/10 text-emerald-300">Protein: ${p}</span>`;
-        });
-        state.selectedStarches.forEach(s => {
-          badgesHtml += `<span class="px-2.5 py-0.5 rounded-md text-xs font-bold border border-cyan-500/40 bg-cyan-500/10 text-cyan-300">Starch: ${s}</span>`;
         });
         activeStackBadges.innerHTML = badgesHtml;
       } else {
@@ -819,51 +2291,15 @@
 
     function renderRecipes() {
       let filtered = window.BASE_AND_BOOSTER_RECIPES.filter(r => {
-        // Bases filter (OR across selected bases)
         if (state.selectedBases.length > 0 && !r.bases.some(b => state.selectedBases.includes(b))) return false;
-        // Flavors filter (OR across selected flavors)
         if (state.selectedFlavors.length > 0 && !r.flavors.some(f => state.selectedFlavors.includes(f))) return false;
-        
-        // Time filter (Array match)
-        if (state.selectedTimes.length > 0) {
-          const matchesTime = r.time && r.time.some(t => state.selectedTimes.includes(t));
-          if (!matchesTime) return false;
-        }
-
-        // Meal filter (Array intersection)
-        if (state.selectedMeals.length > 0) {
-          const matchesMeal = r.meal && r.meal.some(m => state.selectedMeals.includes(m));
-          if (!matchesMeal) return false;
-        }
-
-        // Culture / Region filter (Array intersection)
-        if (state.selectedRegions.length > 0) {
-          const matchesRegion = r.culture && r.culture.some(c => state.selectedRegions.includes(c));
-          if (!matchesRegion) return false;
-        }
-
-        // Protein filter (Array intersection)
-        if (state.selectedProteins.length > 0) {
-          const matchesProtein = r.protein && r.protein.some(p => state.selectedProteins.includes(p));
-          if (!matchesProtein) return false;
-        }
-
-        // Starch filter (Array intersection)
-        if (state.selectedStarches.length > 0) {
-          const matchesStarch = r.starch && r.starch.some(s => state.selectedStarches.includes(s));
-          if (!matchesStarch) return false;
-        }
-
-        // Search Query
+        if (state.selectedRegions.length > 0 && !state.selectedRegions.includes(r.culture)) return false;
+        if (state.selectedProteins.length > 0 && !state.selectedProteins.includes(r.protein)) return false;
+        if (state.selectedStarches.length > 0 && !state.selectedStarches.includes(r.starch)) return false;
         if (state.searchQuery) {
-          const cultureStr = Array.isArray(r.culture) ? r.culture.join(' ') : (r.culture || '');
-          const mealStr = Array.isArray(r.meal) ? r.meal.join(' ') : (r.meal || '');
-          const proteinStr = Array.isArray(r.protein) ? r.protein.join(' ') : (r.protein || '');
-          const starchStr = Array.isArray(r.starch) ? r.starch.join(' ') : (r.starch || '');
-          const haystack = `${r.title} ${cultureStr} ${mealStr} ${r.ingredients.join(' ')} ${proteinStr} ${starchStr}`.toLowerCase();
+          const haystack = `${r.title} ${r.culture} ${r.ingredients.join(' ')} ${r.protein} ${r.starch}`.toLowerCase();
           if (!haystack.includes(state.searchQuery)) return false;
         }
-
         return true;
       });
 
@@ -883,57 +2319,46 @@
         emptyState.classList.remove('hidden');
       } else {
         emptyState.classList.add('hidden');
-        recipeGrid.innerHTML = filtered.map(r => {
-          const cultureDisplay = Array.isArray(r.culture) ? r.culture.join(', ') : (r.culture || '');
-          const proteinDisplay = Array.isArray(r.protein) ? r.protein.join(', ') : (r.protein || '');
-          const starchDisplay = Array.isArray(r.starch) ? r.starch.join(', ') : (r.starch || '');
-          const mealDisplay = Array.isArray(r.meal) ? r.meal.map(m => `<span class="capitalize">${m}</span>`).join(', ') : '';
-
-          return `
-            <div class="glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" onclick="openModal('${r.id}')">
-              <div>
-                <div class="flex items-center justify-between gap-2 mb-3">
-                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-wider truncate max-w-[160px]">
-                    ${cultureDisplay}
-                  </span>
-                  <span class="text-[11px] text-slate-400 whitespace-nowrap">
-                    <i class="fa-regular fa-clock mr-1"></i>${r.prep}m prep • ${r.cook}m cook
-                  </span>
-                </div>
-
-                <h4 class="font-display font-bold text-base text-white group-hover:text-amber-300 transition-colors line-clamp-1 mb-2">
-                  ${r.title}
-                </h4>
-
-                <div class="text-[11px] text-teal-400 font-medium mb-3 flex items-center gap-1.5">
-                  <i class="fa-solid fa-utensils"></i> ${mealDisplay}
-                </div>
-
-                <div class="flex flex-wrap gap-1.5 mb-4">
-                  ${r.bases.map(bId => {
-                    const def = BASE_DEFS.find(b => b.id === bId);
-                    return def ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${def.color.split(' hover:')[0]}"><i class="fa-solid ${def.icon} mr-1"></i>${def.short}</span>` : '';
-                  }).join('')}
-                  ${r.flavors.map(fId => {
-                    const def = FLAVOR_DEFS.find(f => f.id === fId);
-                    return def ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${def.color.split(' hover:')[0]}"><i class="fa-solid ${def.icon} mr-1"></i>${def.short}</span>` : '';
-                  }).join('')}
-                </div>
-
-                <div class="flex items-center gap-2 text-xs text-slate-400 mb-4 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
-                  <span class="flex items-center gap-1 truncate"><i class="fa-solid fa-drumstick-bite text-emerald-400"></i> ${proteinDisplay}</span>
-                  <span class="text-slate-600">•</span>
-                  <span class="flex items-center gap-1 truncate"><i class="fa-solid fa-bowl-rice text-cyan-400"></i> ${starchDisplay}</span>
-                </div>
+        recipeGrid.innerHTML = filtered.map(r => `
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" onclick="openModal('${r.id}')">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-wider">
+                  ${r.culture}
+                </span>
+                <span class="text-[11px] text-slate-400">
+                  <i class="fa-regular fa-clock mr-1"></i>${r.prep}m prep • ${r.cook}m cook
+                </span>
               </div>
 
-              <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-amber-400 font-semibold group-hover:text-amber-300">
-                <span>View Recipe Card</span>
-                <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+              <h4 class="font-display font-bold text-base text-white group-hover:text-amber-300 transition-colors line-clamp-1 mb-3">
+                ${r.title}
+              </h4>
+
+              <div class="flex flex-wrap gap-1.5 mb-4">
+                ${r.bases.map(bId => {
+                  const def = BASE_DEFS.find(b => b.id === bId);
+                  return `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${def.color.split(' hover:')[0]}"><i class="fa-solid ${def.icon} mr-1"></i>${def.short}</span>`;
+                }).join('')}
+                ${r.flavors.map(fId => {
+                  const def = FLAVOR_DEFS.find(f => f.id === fId);
+                  return `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${def.color.split(' hover:')[0]}"><i class="fa-solid ${def.icon} mr-1"></i>${def.short}</span>`;
+                }).join('')}
+              </div>
+
+              <div class="flex items-center gap-3 text-xs text-slate-400 mb-4 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-drumstick-bite text-emerald-400"></i> ${r.protein}</span>
+                <span class="text-slate-600">•</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-bowl-rice text-cyan-400"></i> ${r.starch}</span>
               </div>
             </div>
-          `;
-        }).join('');
+
+            <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-amber-400 font-semibold group-hover:text-amber-300">
+              <span>View Recipe Card</span>
+              <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+            </div>
+          </div>
+        `).join('');
       }
     }
 
@@ -945,26 +2370,20 @@
       document.getElementById('modalPrep').textContent = `${r.prep} mins`;
       document.getElementById('modalCook').textContent = `${r.cook} mins`;
 
-      const cultures = Array.isArray(r.culture) ? r.culture : [r.culture];
-      const proteins = Array.isArray(r.protein) ? r.protein : [r.protein];
-      const starches = Array.isArray(r.starch) ? r.starch : [r.starch];
-      const meals = Array.isArray(r.meal) ? r.meal : [r.meal];
-
       document.getElementById('modalTagsHeader').innerHTML = `
-        ${cultures.map(c => `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-wider">${c}</span>`).join('')}
-        ${meals.map(m => `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 uppercase tracking-wider capitalize">${m}</span>`).join('')}
-        ${proteins.map(p => `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">${p}</span>`).join('')}
-        ${starches.map(s => `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">${s}</span>`).join('')}
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-wider">${r.culture}</span>
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">${r.protein}</span>
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">${r.starch}</span>
       `;
 
       const baseBadges = r.bases.map(bId => {
         const def = BASE_DEFS.find(b => b.id === bId);
-        return def ? `<span class="px-3 py-1 rounded-lg text-xs font-bold border ${def.color.split(' hover:')[0]} flex items-center gap-1.5"><i class="fa-solid ${def.icon}"></i> ${def.name}</span>` : '';
+        return `<span class="px-3 py-1 rounded-lg text-xs font-bold border ${def.color.split(' hover:')[0]} flex items-center gap-1.5"><i class="fa-solid ${def.icon}"></i> ${def.name}</span>`;
       }).join('');
 
       const flavorBadges = r.flavors.map(fId => {
         const def = FLAVOR_DEFS.find(f => f.id === fId);
-        return def ? `<span class="px-3 py-1 rounded-lg text-xs font-bold border ${def.color.split(' hover:')[0]} flex items-center gap-1.5"><i class="fa-solid ${def.icon}"></i> ${def.name}</span>` : '';
+        return `<span class="px-3 py-1 rounded-lg text-xs font-bold border ${def.color.split(' hover:')[0]} flex items-center gap-1.5"><i class="fa-solid ${def.icon}"></i> ${def.name}</span>`;
       }).join('');
 
       document.getElementById('modalStackCubes').innerHTML = baseBadges + flavorBadges;
@@ -996,29 +2415,25 @@
       modalContainer.classList.add('scale-95');
     }
 
-    window.openModal = openModal;
-
-    // Automatically load relative recipes.json on startup
-    async function loadInitialRecipes() {
-      try {
-        const response = await fetch('recipes.json');
-        if (response.ok) {
-          const data = await response.json();
-          if (Array.isArray(data)) {
-            window.BASE_AND_BOOSTER_RECIPES = data;
-          }
-        }
-      } catch (err) {
-        console.warn('Could not auto-load recipes.json:', err);
-        window.BASE_AND_BOOSTER_RECIPES = [];
-      } finally {
-        initControls();
-        attachEvents();
-        renderRecipes();
-      }
+    function openShoppingModal() {
+      shoppingModal.classList.remove('opacity-0', 'pointer-events-none');
+      shoppingModalContainer.classList.remove('scale-95');
+      shoppingModalContainer.classList.add('scale-100');
     }
 
-    window.onload = loadInitialRecipes;
+    function closeShoppingModal() {
+      shoppingModal.classList.add('opacity-0', 'pointer-events-none');
+      shoppingModalContainer.classList.remove('scale-100');
+      shoppingModalContainer.classList.add('scale-95');
+    }
+
+    window.openModal = openModal;
+
+    window.onload = function() {
+      initControls();
+      attachEvents();
+      renderRecipes();
+    };
   </script>
 </body>
 </html>
