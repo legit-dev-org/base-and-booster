@@ -59,9 +59,53 @@ This page covers the file format, every recipe property, and how filtering and i
 | Key | Type | Required | Description |
 |---|---|---|---|
 | `schemaVersion` | number | recommended | Format version. Currently `1`. |
-| `recipes` | array | ✅ | The list of recipe objects. |
+| `recipes` | array | ✅ (or `blocks`) | The list of recipe objects. |
+| `blocks` | array | | Prep recipes for the freezer blocks themselves (see [Freezer block recipes](#-freezer-block-recipes-blocks)). |
 
-A bare JSON array of recipes (`[ {...}, {...} ]`) also works when importing.
+A bare JSON array of recipes (`[ {...}, {...} ]`) also works when importing. A file can also contain only `blocks`.
+
+---
+
+## 🧊 Freezer block recipes (`blocks`)
+
+The **Freezer Blocks** button on the page shows how to make each Structural Base and Flavor Booster. Those prep recipes live in the `blocks` array. The **Freezer Block Prep** shopping list is built from their ingredients, so editing a block here updates that list too.
+
+```json
+"blocks": [
+  {
+    "kind": "base",
+    "id": "5",
+    "name": "Smoky Mushroom Duxelles",
+    "tagline": "Earthy, meaty umami",
+    "description": "Finely chopped mushrooms cooked down until dry and concentrated.",
+    "bestFor": ["Gravies", "Pasta sauces"],
+    "yield": "About 14 cubes (2 tbsp each)",
+    "prepMinutes": 10,
+    "cookMinutes": 25,
+    "storage": "Up to 3 months frozen",
+    "ingredients": [{ "item": "cremini mushrooms", "qty": "2 lb", "aisle": "produce" }],
+    "steps": [{ "title": "Cook down", "text": "Cook over medium-high until all the liquid evaporates." }],
+    "notes": ["Squeeze the mushrooms dry for a deeper flavor."]
+  }
+]
+```
+
+| Property | Type | Required | Description |
+|---|---|---|---|
+| `kind` | `"base"` \| `"booster"` | ✅ | Which family the block belongs to. |
+| `id` | string \| number | ✅ | Matches the ids recipes use in `bases` / `boosters` (`1`–`4`, `A`–`D`, or your own like `5` / `"E"`). Booster ids are uppercased. |
+| `name` | string | ✅ | Display name. For custom blocks, it also names the filter chip and badges. |
+| `tagline` | string | | One-line flavor summary. |
+| `description` | string | | What it is and why it works. |
+| `bestFor` | string[] | | Short "use it for…" tags. |
+| `yield` | string | | e.g. `"About 14 cubes (2 tbsp each)"`. |
+| `prepMinutes`, `cookMinutes` | number | | Time to make one batch. |
+| `storage` | string | | e.g. `"Up to 3 months frozen"`. |
+| `ingredients` | array | | Same format as recipe [`ingredients`](#ingredients). Set `aisle` so the prep shopping list groups cleanly. |
+| `steps` | array | | Same format as recipe [`steps`](#steps). |
+| `notes` | string[] | | Tips and substitutions. |
+
+Importing a block with the same `kind` + `id` as an existing one replaces it. A recipe can use a block that has no `blocks` entry; it still works, and the guide shows a "no prep recipe yet" note for it.
 
 ---
 

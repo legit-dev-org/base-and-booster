@@ -1,5 +1,771 @@
 {
   "schemaVersion": 1,
+  "blocks": [
+    {
+      "kind": "base",
+      "id": "1",
+      "name": "Clean French Mirepoix",
+      "tagline": "Sweet, un-browned aromatic cushion",
+      "description": "Onion, carrot, and celery sweated slowly in fat without any color. It adds a quiet savory sweetness that supports delicate soups, pilafs, piccatas, and pan sauces without taking over.",
+      "bestFor": [
+        "Clear soups & broths",
+        "Rice & grain pilafs",
+        "Lemon & butter pan sauces",
+        "Egg dishes"
+      ],
+      "yield": "About 14 cubes (2 tbsp each)",
+      "prepMinutes": 15,
+      "cookMinutes": 35,
+      "storage": "Up to 3 months frozen",
+      "ingredients": [
+        {
+          "item": "yellow onions",
+          "qty": "3 medium",
+          "aisle": "produce",
+          "note": "finely diced"
+        },
+        {
+          "item": "carrots",
+          "qty": "3 large",
+          "aisle": "produce",
+          "note": "finely diced"
+        },
+        {
+          "item": "celery",
+          "qty": "3 stalks",
+          "aisle": "produce",
+          "note": "finely diced"
+        },
+        {
+          "item": "butter or olive oil",
+          "qty": "3 tbsp",
+          "aisle": "dairy-eggs"
+        },
+        {
+          "item": "kosher salt",
+          "qty": "1 tsp",
+          "aisle": "spices"
+        },
+        {
+          "item": "vegetable or chicken stock",
+          "qty": "1/2 cup",
+          "aisle": "pantry"
+        },
+        {
+          "item": "MSG or mushroom powder",
+          "qty": "1/2 tsp",
+          "aisle": "spices",
+          "optional": true
+        }
+      ],
+      "steps": [
+        {
+          "title": "Dice small",
+          "text": "Cut the onion, carrot, and celery into an even 1/4-inch dice, or pulse each separately in a food processor until finely chopped but not mushy. Small pieces melt into sauces faster."
+        },
+        {
+          "title": "Sweat, don't brown",
+          "text": "Melt the butter in a wide pot over medium-low heat. Add the vegetables and salt, stir to coat, then cover. Cook 25–30 minutes, stirring every 5 minutes, until completely soft, sweet, and translucent. If anything starts to color, lower the heat and add a splash of water."
+        },
+        {
+          "title": "Loosen",
+          "text": "Uncover, add the stock and MSG (if using), and simmer 3–4 minutes until most of the liquid is absorbed and the mixture looks glossy and spoonable."
+        },
+        {
+          "title": "Optional texture",
+          "text": "For a smoother base that disappears into sauces, blitz about half the batch with an immersion blender. Leave the rest chunky."
+        },
+        {
+          "title": "Cool and portion",
+          "text": "Spread on a plate to cool for 15 minutes. Spoon 2 tablespoons into each well of a silicone ice-cube tray and level the tops."
+        },
+        {
+          "title": "Freeze",
+          "text": "Freeze uncovered 4–6 hours until solid. Pop the cubes out into a labeled zip-top bag, press out the air, and return to the freezer."
+        }
+      ],
+      "notes": [
+        "Color is the enemy here: browned mirepoix belongs to Base 2's territory.",
+        "Doubles easily. Use your widest pot so the vegetables sweat instead of steaming in a deep pile."
+      ]
+    },
+    {
+      "kind": "base",
+      "id": "2",
+      "name": "Roasted Allium-Tomato Jam",
+      "tagline": "Deep, dark, caramelized umami powerhouse",
+      "description": "Deeply caramelized onions, sweet roasted garlic, and tomato paste fried until brick red, finished with balsamic. It gives you hours-of-braising depth in a single cube.",
+      "bestFor": [
+        "Chilis & stews",
+        "Curry gravies",
+        "Ragù & tomato sauces",
+        "Glazes & stir-fry sauces"
+      ],
+      "yield": "About 16 cubes (2 tbsp each)",
+      "prepMinutes": 15,
+      "cookMinutes": 60,
+      "storage": "Up to 3 months frozen",
+      "ingredients": [
+        {
+          "item": "yellow onions",
+          "qty": "4 large",
+          "aisle": "produce",
+          "note": "thinly sliced"
+        },
+        {
+          "item": "garlic",
+          "qty": "2 whole heads",
+          "aisle": "produce"
+        },
+        {
+          "item": "tomato paste",
+          "qty": "2 cans (6 oz each)",
+          "aisle": "pantry"
+        },
+        {
+          "item": "balsamic vinegar",
+          "qty": "3 tbsp",
+          "aisle": "pantry"
+        },
+        {
+          "item": "olive oil",
+          "qty": "1/4 cup",
+          "aisle": "pantry"
+        },
+        {
+          "item": "kosher salt",
+          "qty": "1 1/2 tsp",
+          "aisle": "spices"
+        },
+        {
+          "item": "brown sugar",
+          "qty": "1 tsp",
+          "aisle": "pantry",
+          "optional": true
+        },
+        {
+          "item": "MSG or anchovy paste",
+          "qty": "1 tsp",
+          "aisle": "spices",
+          "optional": true
+        }
+      ],
+      "steps": [
+        {
+          "title": "Roast the garlic",
+          "text": "Heat the oven to 400°F. Slice the top 1/4 inch off each garlic head, drizzle with 1 tsp oil, wrap in foil, and roast 40 minutes until soft and golden. Do this while the onions cook."
+        },
+        {
+          "title": "Caramelize the onions",
+          "text": "Heat the remaining oil in a wide heavy pot over medium. Add the onions and 1 tsp salt. Cook 40–45 minutes, stirring every few minutes and scraping the bottom, until jammy and deep mahogany. When the pan gets sticky, add 2 tbsp water and scrape."
+        },
+        {
+          "title": "Fry the paste",
+          "text": "Push the onions aside, add the tomato paste to the bare pot, and fry 4–5 minutes, stirring, until it turns from bright red to dark brick red and smells sweet. This step builds most of the umami."
+        },
+        {
+          "title": "Combine",
+          "text": "Squeeze the roasted garlic cloves into the pot. Add the balsamic, sugar, MSG, remaining salt, and 1/2 cup water. Simmer 3 minutes, scraping up everything stuck to the bottom."
+        },
+        {
+          "title": "Blend to jam",
+          "text": "Blend with an immersion blender until mostly smooth and spreadable, like a thick jam. Add a splash of water if it's too stiff to blend."
+        },
+        {
+          "title": "Cool, portion, freeze",
+          "text": "Cool 15 minutes, spoon 2 tablespoons into each tray well, and freeze 4–6 hours. Transfer the cubes to a labeled bag."
+        }
+      ],
+      "notes": [
+        "Don't rush the onions over high heat. They scorch outside before the sugars develop inside.",
+        "A slow cooker on high with the lid ajar caramelizes onions hands-off in about 8 hours."
+      ]
+    },
+    {
+      "kind": "base",
+      "id": "3",
+      "name": "Green Citrus & Herb Slurry",
+      "tagline": "Bright, acidic, herbaceous green backbone",
+      "description": "Charred poblanos, herbs with their stems, scallions, ginger, olive oil, and citrus, blended until vivid green. Cook with it for verde and green-curry dishes, or thaw it as an instant dressing, chutney, or marinade.",
+      "bestFor": [
+        "Green curries & verde sauces",
+        "Instant dressings & tzatziki",
+        "Marinades",
+        "Finishing a dish with brightness"
+      ],
+      "yield": "About 16 cubes (2 tbsp each)",
+      "prepMinutes": 20,
+      "cookMinutes": 10,
+      "storage": "Up to 2 months frozen (color fades after that)",
+      "ingredients": [
+        {
+          "item": "poblano peppers",
+          "qty": "2",
+          "aisle": "produce"
+        },
+        {
+          "item": "cilantro",
+          "qty": "1 large bunch",
+          "aisle": "produce",
+          "note": "leaves and tender stems"
+        },
+        {
+          "item": "flat-leaf parsley",
+          "qty": "1 bunch",
+          "aisle": "produce",
+          "note": "leaves and tender stems"
+        },
+        {
+          "item": "scallions",
+          "qty": "6",
+          "aisle": "produce"
+        },
+        {
+          "item": "fresh ginger",
+          "qty": "2-inch piece",
+          "aisle": "produce",
+          "note": "peeled"
+        },
+        {
+          "item": "garlic",
+          "qty": "3 cloves",
+          "aisle": "produce"
+        },
+        {
+          "item": "limes",
+          "qty": "2",
+          "aisle": "produce",
+          "note": "zest and juice"
+        },
+        {
+          "item": "lemon",
+          "qty": "1",
+          "aisle": "produce",
+          "note": "zest and juice"
+        },
+        {
+          "item": "extra virgin olive oil",
+          "qty": "1/2 cup",
+          "aisle": "pantry"
+        },
+        {
+          "item": "kosher salt",
+          "qty": "1 tsp",
+          "aisle": "spices"
+        }
+      ],
+      "steps": [
+        {
+          "title": "Char the poblanos",
+          "text": "Char the poblanos directly over a gas flame or under the broiler, turning, 8–10 minutes until blackened all over. Seal them in a bowl under a plate for 10 minutes to steam."
+        },
+        {
+          "title": "Peel and seed",
+          "text": "Rub off the blackened skin with a paper towel (don't rinse, you'll lose flavor). Remove the stems and seeds."
+        },
+        {
+          "title": "Optional: lock in the green",
+          "text": "For the brightest color, dunk the cilantro and parsley in boiling water for 10 seconds, then into ice water. Squeeze dry. Blanched herbs stay green in the freezer much longer."
+        },
+        {
+          "title": "Blend",
+          "text": "Blend the poblanos, herbs, scallions, ginger, garlic, citrus zest and juice, olive oil, and salt until smooth and pourable, about 1 minute. Add up to 1/4 cup cold water if needed. Taste: it should be bright, salty, and tangy."
+        },
+        {
+          "title": "Freeze quickly",
+          "text": "Pour straight into the tray, 2 tablespoons per well, and freeze right away. Speed keeps the color vivid. After 4–6 hours, transfer to a bag and press out all the air."
+        }
+      ],
+      "notes": [
+        "Cooking with it: melt a cube into a hot pan for verde skillets and green curries.",
+        "Cold use: thaw 20–30 seconds in the microwave and whisk with yogurt or oil for dressings and dips."
+      ]
+    },
+    {
+      "kind": "base",
+      "id": "4",
+      "name": "Velvet Garlic-Nut Cream",
+      "tagline": "Silky, nutty emulsion (dairy-free)",
+      "description": "Soaked cashews (or sunflower seeds) blended with roasted garlic, mild broth, and lemon into a dense, stable cream. It makes any pan sauce silky and won't split or curdle the way dairy can.",
+      "bestFor": [
+        "Alfredo & cream pastas",
+        "Korma & tikka masala",
+        "Chowders & bisques",
+        "Creamy dips & spreads"
+      ],
+      "yield": "About 14 cubes (2 tbsp each)",
+      "prepMinutes": 10,
+      "cookMinutes": 15,
+      "storage": "Up to 3 months frozen",
+      "ingredients": [
+        {
+          "item": "raw cashews (or sunflower seeds for nut-free)",
+          "qty": "1 1/2 cups",
+          "aisle": "pantry"
+        },
+        {
+          "item": "garlic",
+          "qty": "1 whole head",
+          "aisle": "produce"
+        },
+        {
+          "item": "mild vegetable or chicken broth",
+          "qty": "1 cup",
+          "aisle": "pantry"
+        },
+        {
+          "item": "lemon",
+          "qty": "1",
+          "aisle": "produce",
+          "note": "zest and 1 tbsp juice"
+        },
+        {
+          "item": "kosher salt",
+          "qty": "1 tsp",
+          "aisle": "spices"
+        },
+        {
+          "item": "nutritional yeast",
+          "qty": "2 tbsp",
+          "aisle": "pantry",
+          "optional": true
+        }
+      ],
+      "steps": [
+        {
+          "title": "Soak",
+          "text": "Cover the cashews with boiling water and soak 15 minutes (or cold water for 4 hours). Drain and rinse."
+        },
+        {
+          "title": "Soften the garlic",
+          "text": "Peel the cloves and simmer them in the broth 10–12 minutes until completely soft and mellow. You can also use a head of roasted garlic from the Base 2 batch."
+        },
+        {
+          "title": "Blend until velvety",
+          "text": "Blend the cashews, garlic, warm broth, lemon zest and juice, salt, and nutritional yeast on high for 2 full minutes, scraping down once, until perfectly smooth with no grit. It should be thick like Greek yogurt."
+        },
+        {
+          "title": "Portion and freeze",
+          "text": "Spoon 2 tablespoons into each tray well (it's thick, so press it down with the back of a spoon). Freeze 4–6 hours, then bag."
+        }
+      ],
+      "notes": [
+        "A high-speed blender gives the silkiest result. With a regular blender, soak overnight and blend longer.",
+        "Sunflower seeds work for nut-free kitchens. They can turn slightly green when cooked with acid, which is harmless."
+      ]
+    },
+    {
+      "kind": "booster",
+      "id": "A",
+      "name": "Euro-Bistro",
+      "tagline": "Red wine, cracked pepper, thyme & Dijon",
+      "description": "A full bottle of red wine reduced to a syrup with shallots, garlic, woodsy herbs, cracked peppercorns, and Dijon. It's the backbone of steakhouse pan sauces, French and Italian braises, and herby Mediterranean dishes.",
+      "bestFor": [
+        "Steak & chop pan sauces",
+        "Ragù, stews & braises",
+        "Herb roasted vegetables",
+        "Vinaigrettes"
+      ],
+      "yield": "About 12 cubes (1 tbsp each)",
+      "prepMinutes": 10,
+      "cookMinutes": 30,
+      "storage": "Up to 3 months frozen",
+      "ingredients": [
+        {
+          "item": "dry red wine",
+          "qty": "1 bottle (750 ml)",
+          "aisle": "pantry"
+        },
+        {
+          "item": "shallots",
+          "qty": "4",
+          "aisle": "produce",
+          "note": "minced"
+        },
+        {
+          "item": "garlic",
+          "qty": "6 cloves",
+          "aisle": "produce",
+          "note": "minced"
+        },
+        {
+          "item": "fresh thyme leaves",
+          "qty": "2 tbsp",
+          "aisle": "produce"
+        },
+        {
+          "item": "fresh rosemary",
+          "qty": "1 tbsp",
+          "aisle": "produce",
+          "note": "finely chopped"
+        },
+        {
+          "item": "black peppercorns",
+          "qty": "2 tbsp",
+          "aisle": "spices",
+          "note": "coarsely cracked"
+        },
+        {
+          "item": "Dijon mustard",
+          "qty": "3 tbsp",
+          "aisle": "pantry"
+        },
+        {
+          "item": "Worcestershire sauce",
+          "qty": "2 tbsp",
+          "aisle": "pantry"
+        },
+        {
+          "item": "olive oil or butter",
+          "qty": "1/4 cup",
+          "aisle": "pantry"
+        },
+        {
+          "item": "kosher salt",
+          "qty": "1 tsp",
+          "aisle": "spices"
+        }
+      ],
+      "steps": [
+        {
+          "title": "Sweat the aromatics",
+          "text": "Heat the oil in a wide saucepan over medium. Add the shallots and garlic and cook 4–5 minutes until soft and lightly golden."
+        },
+        {
+          "title": "Bloom",
+          "text": "Add the thyme, rosemary, and cracked pepper and stir 1 minute until very fragrant."
+        },
+        {
+          "title": "Reduce the wine",
+          "text": "Pour in the whole bottle of wine and raise the heat to a strong simmer. Reduce 20–25 minutes, stirring occasionally, until only about 2/3 cup remains and it's syrupy enough to coat a spoon."
+        },
+        {
+          "title": "Finish off the heat",
+          "text": "Remove from heat and whisk in the Dijon, Worcestershire, and salt. Taste: it should be intensely winey, peppery, and herbal. It's a concentrate, so strong is right."
+        },
+        {
+          "title": "Freeze small",
+          "text": "Cool 10 minutes, then portion 1 tablespoon per well (use a mini tray if you have one). Freeze 4 hours and bag."
+        }
+      ],
+      "notes": [
+        "No wine? Use 2 cups unsweetened grape juice plus 1/4 cup red wine vinegar, reduced the same way.",
+        "Boosters are more concentrated than bases, so they use 1-tablespoon cubes."
+      ]
+    },
+    {
+      "kind": "booster",
+      "id": "B",
+      "name": "East & SE Asian Umami",
+      "tagline": "Ginger, scallion, lemongrass, galangal & sesame",
+      "description": "A ginger-scallion confit loaded with lemongrass and galangal, seasoned with tamari and Shaoxing wine and enriched with sesame oil and coconut cream. It powers everything from lo mein to Tom Kha.",
+      "bestFor": [
+        "Stir-fries & fried rice",
+        "Noodle soups & curries",
+        "Glazes & marinades",
+        "Dipping sauces"
+      ],
+      "yield": "About 14 cubes (1 tbsp each)",
+      "prepMinutes": 15,
+      "cookMinutes": 10,
+      "storage": "Up to 3 months frozen",
+      "ingredients": [
+        {
+          "item": "fresh ginger",
+          "qty": "6 oz (about 1 cup minced)",
+          "aisle": "produce"
+        },
+        {
+          "item": "scallions",
+          "qty": "2 bunches",
+          "aisle": "produce",
+          "note": "finely sliced"
+        },
+        {
+          "item": "lemongrass",
+          "qty": "3 stalks",
+          "aisle": "produce",
+          "note": "tender core only"
+        },
+        {
+          "item": "galangal (or extra ginger)",
+          "qty": "2 tbsp",
+          "aisle": "produce",
+          "note": "minced"
+        },
+        {
+          "item": "garlic",
+          "qty": "6 cloves",
+          "aisle": "produce"
+        },
+        {
+          "item": "neutral oil",
+          "qty": "1/2 cup",
+          "aisle": "pantry"
+        },
+        {
+          "item": "toasted sesame oil",
+          "qty": "3 tbsp",
+          "aisle": "pantry"
+        },
+        {
+          "item": "tamari or soy sauce",
+          "qty": "1/4 cup",
+          "aisle": "pantry"
+        },
+        {
+          "item": "Shaoxing rice wine",
+          "qty": "2 tbsp",
+          "aisle": "pantry"
+        },
+        {
+          "item": "coconut cream",
+          "qty": "1/2 cup",
+          "aisle": "pantry"
+        },
+        {
+          "item": "sugar",
+          "qty": "1 tbsp",
+          "aisle": "pantry"
+        }
+      ],
+      "steps": [
+        {
+          "title": "Mince the aromatics",
+          "text": "Pulse the ginger, lemongrass, galangal, and garlic in a food processor until very finely minced. Put them in a heatproof bowl with the scallions."
+        },
+        {
+          "title": "Sizzle",
+          "text": "Heat the neutral oil in a small saucepan until shimmering (about 350°F). Carefully pour it over the aromatics. It will sizzle hard, blooming the oils without browning. Stir well."
+        },
+        {
+          "title": "Season",
+          "text": "Return everything to the saucepan with the tamari, Shaoxing wine, and sugar. Simmer gently 3–4 minutes until the raw edge of the ginger is gone."
+        },
+        {
+          "title": "Enrich",
+          "text": "Off the heat, stir in the sesame oil and coconut cream until combined. It will look loose and creamy."
+        },
+        {
+          "title": "Freeze",
+          "text": "Cool 10 minutes and portion 1 tablespoon per well, stirring between scoops so every cube gets oil and solids. Freeze 4 hours and bag."
+        }
+      ],
+      "notes": [
+        "Use a freezer-only tray. Ginger and lemongrass can perfume silicone permanently.",
+        "Lemongrass: peel off the tough outer layers and use only the pale bottom 4–5 inches."
+      ]
+    },
+    {
+      "kind": "booster",
+      "id": "C",
+      "name": "South Asian Masala (Tadka)",
+      "tagline": "Bloomed mustard seed, cumin, curry leaf & hing",
+      "description": "A classic tadka (whole spices bloomed in hot ghee) frozen at its peak with fresh ginger, garlic, green chili, and ground spices. One cube instantly turns a dal, curry, or hash into the real thing.",
+      "bestFor": [
+        "Dals & lentil soups",
+        "Curries & korma",
+        "Spiced potatoes & hashes",
+        "Rice dishes & chutneys"
+      ],
+      "yield": "About 12 cubes (1 tbsp each)",
+      "prepMinutes": 10,
+      "cookMinutes": 8,
+      "storage": "Up to 3 months frozen",
+      "ingredients": [
+        {
+          "item": "ghee or coconut oil",
+          "qty": "1/2 cup",
+          "aisle": "dairy-eggs"
+        },
+        {
+          "item": "black mustard seeds",
+          "qty": "2 tbsp",
+          "aisle": "spices"
+        },
+        {
+          "item": "cumin seeds",
+          "qty": "2 tbsp",
+          "aisle": "spices"
+        },
+        {
+          "item": "fresh curry leaves",
+          "qty": "about 40 (2 sprigs)",
+          "aisle": "produce"
+        },
+        {
+          "item": "asafoetida (hing)",
+          "qty": "1/2 tsp",
+          "aisle": "spices"
+        },
+        {
+          "item": "fresh ginger",
+          "qty": "3 tbsp",
+          "aisle": "produce",
+          "note": "minced"
+        },
+        {
+          "item": "garlic",
+          "qty": "6 cloves",
+          "aisle": "produce",
+          "note": "minced"
+        },
+        {
+          "item": "green chilies",
+          "qty": "4",
+          "aisle": "produce",
+          "note": "finely chopped"
+        },
+        {
+          "item": "ground turmeric",
+          "qty": "1 tbsp",
+          "aisle": "spices"
+        },
+        {
+          "item": "ground coriander",
+          "qty": "2 tsp",
+          "aisle": "spices"
+        },
+        {
+          "item": "Kashmiri chili powder",
+          "qty": "1 tsp",
+          "aisle": "spices"
+        },
+        {
+          "item": "kosher salt",
+          "qty": "1 1/2 tsp",
+          "aisle": "spices"
+        }
+      ],
+      "steps": [
+        {
+          "title": "Set up first",
+          "text": "Measure everything before you start. A tadka moves in seconds. Keep the pan's lid nearby for splatter."
+        },
+        {
+          "title": "Pop the seeds",
+          "text": "Heat the ghee in a small saucepan over medium-high until shimmering. Add the mustard seeds; when they begin to crackle and pop (20–30 seconds), add the cumin seeds and stir 15 seconds until a shade darker."
+        },
+        {
+          "title": "Leaves and hing",
+          "text": "Add the curry leaves (they'll spit, so stand back) and the asafoetida. Stir 10 seconds."
+        },
+        {
+          "title": "Aromatics",
+          "text": "Lower to medium. Add the ginger, garlic, and chilies and cook 2 minutes until softened and fragrant but not browned."
+        },
+        {
+          "title": "Ground spices",
+          "text": "Turn off the heat. Stir in the turmeric, coriander, chili powder, and salt; the residual heat blooms them in 30 seconds without burning."
+        },
+        {
+          "title": "Freeze",
+          "text": "Cool 10 minutes, stir, and portion 1 tablespoon per well so each cube gets plenty of fat. The fat sets solid. Freeze 4 hours and bag."
+        }
+      ],
+      "notes": [
+        "Burnt cumin tastes bitter. If the seeds go black, start over. It only costs a few cents.",
+        "Find curry leaves and hing at Indian grocers. Curry leaves freeze well, so buy extra."
+      ]
+    },
+    {
+      "kind": "booster",
+      "id": "D",
+      "name": "Latin & Tex-Mex Adobo",
+      "tagline": "Smoky chipotle, ancho, cumin & Mexican oregano",
+      "description": "Toasted ancho chilies and smoky chipotles blended with garlic, spices, and cider vinegar, then fried into a thick, brick-red paste. It's deep, earthy, tangy heat for tacos, chilis, and enchilada sauces.",
+      "bestFor": [
+        "Tacos & fajitas",
+        "Chilis & bean stews",
+        "Enchilada & taco sauces",
+        "Marinades & wings"
+      ],
+      "yield": "About 14 cubes (1 tbsp each)",
+      "prepMinutes": 15,
+      "cookMinutes": 25,
+      "storage": "Up to 3 months frozen",
+      "ingredients": [
+        {
+          "item": "dried ancho chilies",
+          "qty": "3 (plus 2 guajillos, optional)",
+          "aisle": "spices",
+          "note": "stemmed and seeded"
+        },
+        {
+          "item": "chipotles in adobo",
+          "qty": "1 can (7 oz)",
+          "aisle": "pantry"
+        },
+        {
+          "item": "garlic",
+          "qty": "6 cloves",
+          "aisle": "produce"
+        },
+        {
+          "item": "Mexican oregano",
+          "qty": "2 tsp",
+          "aisle": "spices"
+        },
+        {
+          "item": "ground cumin",
+          "qty": "2 tsp",
+          "aisle": "spices"
+        },
+        {
+          "item": "apple cider vinegar",
+          "qty": "1/3 cup",
+          "aisle": "pantry"
+        },
+        {
+          "item": "neutral oil",
+          "qty": "1/4 cup",
+          "aisle": "pantry"
+        },
+        {
+          "item": "honey or brown sugar",
+          "qty": "1 tbsp",
+          "aisle": "pantry"
+        },
+        {
+          "item": "kosher salt",
+          "qty": "1 1/2 tsp",
+          "aisle": "spices"
+        },
+        {
+          "item": "ground cinnamon",
+          "qty": "1/4 tsp",
+          "aisle": "spices",
+          "optional": true
+        }
+      ],
+      "steps": [
+        {
+          "title": "Toast the chilies",
+          "text": "Press the dried chilies flat in a dry skillet over medium heat, 20–30 seconds per side, until fragrant and slightly pliable. Don't let them smoke or blacken or they'll turn bitter."
+        },
+        {
+          "title": "Soak",
+          "text": "Cover with boiling water and soak 15 minutes until soft. Reserve 1/2 cup of the soaking liquid."
+        },
+        {
+          "title": "Blend",
+          "text": "Blend the soaked chilies, the whole can of chipotles with their sauce, garlic, oregano, cumin, cinnamon, vinegar, honey, salt, and the reserved liquid until completely smooth."
+        },
+        {
+          "title": "Fry the adobo",
+          "text": "Heat the oil in a deep saucepan over medium-high. Pour in the purée (it will spatter) and cook 8–10 minutes, stirring often, until it darkens, thickens to a paste, and the oil starts to separate around the edges."
+        },
+        {
+          "title": "Freeze",
+          "text": "Cool 10 minutes and portion 1 tablespoon per well. Freeze 4 hours and bag."
+        }
+      ],
+      "notes": [
+        "Heat level: for milder, use only half the chipotles; for hotter, add 2 dried chiles de árbol.",
+        "Frying the purée is the secret. It turns raw, sharp chili into a deep, rounded adobo."
+      ]
+    }
+  ],
   "recipes": [
     {
       "id": "masala-egg-bhurji",
