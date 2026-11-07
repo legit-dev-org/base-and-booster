@@ -11,6 +11,8 @@ The **Modular Freezer Block System** solves this by decoupling **Structure (Text
 
 By batch-prepping and freezing **4 Structural Bases** and **4 High-Intensity Flavor Boosters**, you unlock a 2-dimensional matrix ($4 \times 4 + \text{Multi-stacks}$) capable of producing over **100 distinct global dishes** in under 15 minutes. 
 
+The Stacking Studio ships with **365 curated recipes — one for every day of the year** — spanning breakfast, lunch, dinner, and snacks across 8 cuisines and 11 proteins.
+
 ```
                        ┌──────────────────────────────────────┐
                        │        YOUR BASE INGREDIENTS         │
@@ -31,6 +33,27 @@ By batch-prepping and freezing **4 Structural Bases** and **4 High-Intensity Fla
                        │   (Melted & Emulsified in 90 Secs)   │
                        └──────────────────────────────────────┘
 ```
+
+---
+
+## 🖥️ Using the Stacking Studio
+
+[`index.html`](index.html) is the recipe finder for this system. Use it to:
+
+* **Filter recipes** by meal, total time, protein, culture, starch, freezer base, and booster.
+* **View recipes** with the full freezer-block stack, ingredients, and step-by-step method.
+* **Build a meal plan and shopping list.** Add recipes to your plan to get a merged grocery list grouped by aisle, plus how many freezer cubes to pull. The batch-prep and weeknight-staples checklists are there too.
+
+The 365 default recipes load from [`recipes.json`](recipes.json). Because browsers block reading local files, serve the folder instead of opening the HTML directly:
+
+```bash
+python3 -m http.server
+# then open http://localhost:8000
+```
+
+### 📖 Add your own recipes
+
+Write recipes in the same JSON format and click **Import** on the page (or drag the file in). Imported recipes merge with the defaults by `id`. **See [RECIPE.md](RECIPE.md)** for the full recipe format, every property, the canonical filter values, protein variants, and how importing works.
 
 ---
 
