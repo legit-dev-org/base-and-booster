@@ -1,0 +1,130 @@
+[
+  {
+    "id": "rec-001",
+    "title": "Pan-Seared Chicken & Garlic Herb Orzo",
+    "bases": [1],
+    "flavors": ["A"],
+    "time": ["10-30m"],
+    "meal": ["dinner", "lunch"],
+    "culture": ["Greek & Mediterranean", "Bistro & Steakhouse"],
+    "prep": 5,
+    "cook": 15,
+    "protein": ["Chicken"],
+    "starch": ["Orzo"],
+    "ingredients": [
+      "1 cube Base 1 (Mirepoix)",
+      "1 cube Flavor A (Euro-Bistro)",
+      "1 chicken breast (sliced)",
+      "1 cup dry orzo pasta",
+      "1.5 cups chicken broth",
+      "Fresh thyme & lemon zest"
+    ],
+    "steps": [
+      "Melt Base 1 and Flavor A in a hot skillet with 2 tablespoons of broth.",
+      "Sear chicken slices until golden brown on both sides.",
+      "Add dry orzo and remaining broth, cover, and simmer for 12 minutes until tender and glossy."
+    ]
+  },
+  {
+    "id": "rec-002",
+    "title": "Smoky Adobo Ground Meat & Black Bean Tacos",
+    "bases": [2],
+    "flavors": ["D"],
+    "time": ["0-10m", "10-30m"],
+    "meal": ["dinner", "lunch"],
+    "culture": ["Mexican & Tex-Mex"],
+    "prep": 5,
+    "cook": 10,
+    "protein": ["Ground Meat", "Black Beans"],
+    "starch": ["Tortillas"],
+    "ingredients": [
+      "1 cube Base 2 (Allium Jam)",
+      "1 cube Flavor D (Latin Adobo)",
+      "8 oz ground beef or turkey",
+      "1/2 cup black beans",
+      "Corn tortillas",
+      "Cilantro and lime"
+    ],
+    "steps": [
+      "Brown ground meat in a skillet, draining excess fat if necessary.",
+      "Drop in Base 2, Flavor D, and black beans with 2 tablespoons of water.",
+      "Simmer for 5 minutes until reduced into a rich taco filling; serve in warm tortillas."
+    ]
+  },
+  {
+    "id": "rec-003",
+    "title": "Turkey & Green Herb Breakfast Hash",
+    "bases": [3],
+    "flavors": ["A", "C"],
+    "time": ["0-10m", "10-30m"],
+    "meal": ["breakfast", "brunch"],
+    "culture": ["Greek & Mediterranean", "Cross-Cultural Fusion"],
+    "prep": 5,
+    "cook": 12,
+    "protein": ["Turkey", "Eggs"],
+    "starch": ["Crispy Potatoes"],
+    "ingredients": [
+      "1 cube Base 3 (Green Citrus Slurry)",
+      "1 cube Flavor A (Euro-Bistro)",
+      "1 cup cooked shredded turkey",
+      "2 cups diced parboiled potatoes",
+      "2 eggs"
+    ],
+    "steps": [
+      "Sauté diced potatoes in a skillet until crisp and golden.",
+      "Toss in shredded turkey, Base 3, and Flavor A, melting them into a vibrant herb glaze.",
+      "Make two wells in the hash and crack the eggs into them; cover until whites are set."
+    ]
+  },
+  {
+    "id": "rec-004",
+    "title": "Ginger-Scallion Egg Drop Rice Bowl",
+    "bases": [1],
+    "flavors": ["B"],
+    "time": ["0-10m"],
+    "meal": ["breakfast", "snack", "lunch"],
+    "culture": ["East Asian Stir-Fries"],
+    "prep": 3,
+    "cook": 7,
+    "protein": ["Eggs"],
+    "starch": ["Jasmine Rice"],
+    "ingredients": [
+      "1 cube Base 1 (Clean Mirepoix)",
+      "1 cube Flavor B (East & SE Asian)",
+      "2 eggs (beaten)",
+      "2 cups cooked jasmine rice",
+      "1 cup broth",
+      "Sliced scallions and sesame oil"
+    ],
+    "steps": [
+      "Simmer broth, Base 1, and Flavor B in a small pot until dissolved.",
+      "Stir in warm jasmine rice.",
+      "Drizzle in beaten eggs slowly while stirring gently to form delicate ribbons; garnish with scallions."
+    ]
+  },
+  {
+    "id": "rec-005",
+    "title": "Velvet Garlic Cream Chicken & Rice Skillet",
+    "bases": [4],
+    "flavors": ["A", "C"],
+    "time": ["10-30m"],
+    "meal": ["dinner"],
+    "culture": ["Thai & Indian Curries", "Bistro & Steakhouse"],
+    "prep": 5,
+    "cook": 15,
+    "protein": ["Chicken"],
+    "starch": ["Jasmine Rice", "Quinoa"],
+    "ingredients": [
+      "2 cubes Base 4 (Velvet Garlic-Nut Cream)",
+      "1 cube Flavor C (South Asian Masala)",
+      "1 chicken breast (cubed)",
+      "1.5 cups cooked basmati rice",
+      "1/2 cup warm water"
+    ],
+    "steps": [
+      "Pan-sear chicken cubes in a skillet until fully cooked through.",
+      "Add Base 4, Flavor C, and warm water, whisking into a velvety spiced cream sauce.",
+      "Toss in cooked rice until thoroughly coated and heated through."
+    ]
+  }
+]
