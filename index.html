@@ -187,6 +187,9 @@
             <option value="default">Library order</option>
             <option value="title">Title (A–Z)</option>
             <option value="time">Total time (fastest)</option>
+            <option value="protein">Protein (most per serving)</option>
+            <option value="fiber">Fiber (most per serving)</option>
+            <option value="calories">Calories (lowest per serving)</option>
           </select>
         </label>
       </div>
@@ -596,6 +599,21 @@
       'other':      { label: 'Other',              icon: 'fa-basket-shopping' }
     };
 
+    // Nutrition facts per serving. dv = FDA daily value (2,000 kcal diet); sub = indented label row.
+    const NUTRIENTS = [
+      { key: 'calories',      label: 'Calories',      unit: '',   dv: 2000 },
+      { key: 'totalFat',      label: 'Total Fat',     unit: 'g',  dv: 78,   aliases: ['fat'] },
+      { key: 'saturatedFat',  label: 'Saturated Fat', unit: 'g',  dv: 20,   aliases: ['satFat', 'saturated'], sub: true },
+      { key: 'cholesterol',   label: 'Cholesterol',   unit: 'mg', dv: 300 },
+      { key: 'sodium',        label: 'Sodium',        unit: 'mg', dv: 2300 },
+      { key: 'carbohydrates', label: 'Total Carbs',   unit: 'g',  dv: 275,  aliases: ['carbs', 'carbohydrate'] },
+      { key: 'fiber',         label: 'Dietary Fiber', unit: 'g',  dv: 28,   aliases: ['dietaryFiber'], sub: true },
+      { key: 'sugar',         label: 'Total Sugars',  unit: 'g',  dv: null, aliases: ['sugars'], sub: true },
+      { key: 'protein',       label: 'Protein',       unit: 'g',  dv: 50 }
+    ];
+    // Sort options that rank by a nutrient: [nutrient key, direction]
+    const NUTRITION_SORTS = { protein: ['protein', -1], fiber: ['fiber', -1], calories: ['calories', 1] };
+
     // Weeknight staples checklist (freezer-prep groceries are built from the block recipes)
     const STAPLES = [
       { group: 'Proteins', icon: 'fa-drumstick-bite', color: 'text-emerald-400', items: [
@@ -656,6 +674,18 @@
     const uniq = arr => [...new Set(arr)];
     const num = v => { const n = Number(v); return Number.isFinite(n) && n >= 0 ? n : 0; };
 
+    // { calories: 480, protein: "32g", ... } -> { calories: 480, protein: 32, ... } or null.
+    function normNutrition(raw) {
+      if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+      const out = {};
+      NUTRIENTS.forEach(n => {
+        const v = [n.key, ...(n.aliases || [])].map(k => raw[k]).find(v => v != null && v !== '');
+        const x = typeof v === 'string' ? parseFloat(v) : Number(v);
+        if (Number.isFinite(x) && x >= 0) out[n.key] = x;
+      });
+      return Object.keys(out).length ? out : null;
+    }
+
     function timeBucket(total) {
       if (total <= 10) return '0-10';
       if (total <= 30) return '10-30';
@@ -706,6 +736,7 @@
         ingredients: normIngredients(raw.ingredients),
         steps: normSteps(raw.steps),
         notes: toArr(raw.notes).map(n => String(n).trim()).filter(Boolean),
+        nutrition: normNutrition(raw.nutrition),   // per cube
         _source: source
       } };
     }
@@ -738,6 +769,11 @@
         id, title,
         description: String(raw.description ?? '').trim(),
         servings: raw.servings != null ? String(raw.servings) : '',
+        servingSize: String(raw.servingSize ?? '').trim(),
+        nutrition: normNutrition(raw.nutrition),
+        nutritionByProtein: Object.fromEntries(Object.entries(
+          (raw.nutritionByProtein && typeof raw.nutritionByProtein === 'object') ? raw.nutritionByProtein : {})
+          .map(([k, v]) => [slug(k), normNutrition(v)]).filter(([k, v]) => k && v)),
         prepMinutes: prep, cookMinutes: cook, totalMinutes: prep + cook,
         timeBucket: parseTimeRange(raw.timeRange)?.key || timeBucket(prep + cook),
         meals: uniq(toArr(raw.meals).map(slug).filter(Boolean)),
@@ -900,8 +936,81 @@
       const list = state.recipes.filter(r => matches(r));
       if (state.sort === 'title') list.sort((a, b) => a.title.localeCompare(b.title));
       else if (state.sort === 'time') list.sort((a, b) => a.totalMinutes - b.totalMinutes || a.title.localeCompare(b.title));
+      else if (NUTRITION_SORTS[state.sort]) {
+        const [key, dir] = NUTRITION_SORTS[state.sort];
+        const val = r => nutritionFor(r)?.[key];
+        // recipes without the value always sink to the bottom
+        list.sort((a, b) => {
+          const x = val(a), y = val(b);
+          if (x == null || y == null) return (x == null) - (y == null) || a._order - b._order;
+          return dir * (x - y) || a._order - b._order;
+        });
+      }
       else list.sort((a, b) => a._order - b._order);
       return list;
+    }
+
+    // Nutrition for a recipe cooked with `protein` (defaults to the active protein filter / first protein).
+    function nutritionFor(r, protein) {
+      const p = protein === undefined ? defaultProteinFor(r) : protein;
+      return (p && r.nutritionByProtein[p]) || r.nutrition;
+    }
+
+    const fmtN = (v, unit) => v == null ? '—' : `${Math.round(v * 10) / 10}${unit}`;
+
+    function cardNutrition(r) {
+      const n = nutritionFor(r);
+      if (!n) return '';
+      const hl = NUTRITION_SORTS[state.sort]?.[0];
+      const cell = (key, label, unit, color) => n[key] == null ? '' : `
+        <div class="flex-1 rounded-lg px-2 py-1.5 border text-center ${hl === key ? 'border-amber-400/60 bg-amber-400/10' : 'border-slate-800 bg-slate-900/60'}">
+          <div class="text-sm font-bold ${color}">${fmtN(n[key], unit)}</div>
+          <div class="text-[9px] uppercase tracking-wider text-slate-500">${label}</div>
+        </div>`;
+      return `<div class="flex gap-1.5 mb-4" title="Per serving (estimated)">
+        ${cell('calories', 'kcal', '', 'text-slate-100')}${cell('protein', 'protein', 'g', 'text-emerald-300')}${cell('fiber', 'fiber', 'g', 'text-lime-300')}
+      </div>`;
+    }
+
+    // Label-style "Nutrition Facts" panel for the recipe modal.
+    function nutritionPanel(r, protein) {
+      const n = nutritionFor(r, protein);
+      if (!n) return '';
+      const variant = protein && r.nutritionByProtein[protein] && Object.keys(r.nutritionByProtein).length > 1;
+      // share of calories from each macro (4/4/9 kcal per gram)
+      const kc = { protein: (n.protein || 0) * 4, carbohydrates: (n.carbohydrates || 0) * 4, totalFat: (n.totalFat || 0) * 9 };
+      const kt = kc.protein + kc.carbohydrates + kc.totalFat;
+      const split = kt ? [['protein', 'Protein', 'bg-emerald-400'], ['carbohydrates', 'Carbs', 'bg-sky-400'], ['totalFat', 'Fat', 'bg-amber-400']]
+        .map(([k, l, c]) => ({ l, c, pct: Math.round(kc[k] / kt * 100) })) : [];
+      const rows = NUTRIENTS.filter(d => d.key !== 'calories' && n[d.key] != null).map(d => {
+        const pct = d.dv ? Math.round(n[d.key] / d.dv * 100) : null;
+        return `
+          <div class="flex items-center justify-between gap-3 py-1.5 border-t border-slate-800 ${d.sub ? 'pl-4 text-slate-400' : 'text-slate-200'}">
+            <span class="text-xs">${d.sub ? '' : '<strong>'}${d.label}${d.sub ? '' : '</strong>'} <span class="${d.sub ? '' : 'text-slate-300'}">${fmtN(n[d.key], d.unit)}</span></span>
+            <span class="flex items-center gap-2 shrink-0">
+              ${pct != null ? `<span class="hidden sm:block w-16 h-1.5 rounded-full bg-slate-800 overflow-hidden"><span class="block h-full rounded-full ${pct >= 20 ? (['fiber', 'protein'].includes(d.key) ? 'bg-emerald-400' : 'bg-rose-400') : 'bg-slate-500'}" style="width:${Math.min(100, pct)}%"></span></span>
+              <strong class="text-xs w-9 text-right">${pct}%</strong>` : '<span class="w-9"></span>'}
+            </span>
+          </div>`;
+      }).join('');
+      return `
+        <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h4 class="text-xs font-bold text-lime-300 uppercase tracking-wider"><i class="fa-solid fa-heart-pulse mr-1.5"></i>Nutrition Facts</h4>
+              <p class="text-[11px] text-slate-500 mt-1">Per serving${r.servingSize ? ` (${esc(r.servingSize)})` : ''}${r.servings ? ` · ${esc(r.servings)} servings` : ''}${variant ? ` · with ${esc(labelFor('proteins', protein))}` : ''}</p>
+            </div>
+            ${n.calories != null ? `<div class="text-right"><div class="font-display text-3xl font-extrabold text-white leading-none">${Math.round(n.calories)}</div><div class="text-[10px] uppercase tracking-wider text-slate-500 mt-1">calories</div></div>` : ''}
+          </div>
+          ${split.length ? `
+          <div class="mt-3">
+            <div class="flex h-2 rounded-full overflow-hidden bg-slate-800">${split.map(s => `<span class="${s.c}" style="width:${s.pct}%"></span>`).join('')}</div>
+            <div class="flex flex-wrap gap-x-3 mt-1.5 text-[10px] text-slate-400">${split.map(s => `<span><span class="inline-block w-2 h-2 rounded-full ${s.c} mr-1"></span>${s.l} ${s.pct}%</span>`).join('')}<span class="text-slate-600">of calories</span></div>
+          </div>` : ''}
+          <div class="mt-3 text-[10px] text-right text-slate-500 uppercase tracking-wider">% Daily Value</div>
+          ${rows}
+          <p class="text-[10px] text-slate-500 mt-2 leading-snug">Estimated from the listed ingredients plus the freezer cubes. Excludes optional items and salt added to taste. %DV based on a 2,000-calorie diet.</p>
+        </div>`;
     }
 
     function renderGrid() {
@@ -941,6 +1050,7 @@
               <div class="flex gap-1.5"><i class="fa-solid fa-earth-americas text-indigo-400 mt-0.5 w-3.5"></i><span>${r.cultures.map(c => esc(labelFor('cultures', c))).join(' · ') || '—'}</span></div>
               <div class="flex gap-1.5"><i class="fa-solid fa-bowl-rice text-cyan-400 mt-0.5 w-3.5"></i><span>${r.starches.map(s => esc(labelFor('starches', s))).join(' / ')}</span></div>
             </div>
+            ${cardNutrition(r)}
           </div>
           <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
             <span class="text-amber-400 font-semibold group-hover:text-amber-300">View recipe <i class="fa-solid fa-arrow-right ml-1 transform group-hover:translate-x-1 transition-transform"></i></span>
@@ -1021,6 +1131,7 @@
           <span><i class="fa-solid fa-fire text-amber-400 mr-1"></i>Cook <strong class="text-slate-200">${r.cookMinutes}m</strong></span>
           <span><i class="fa-solid fa-stopwatch text-rose-400 mr-1"></i>Total <strong class="text-slate-200">${r.totalMinutes}m</strong></span>
           ${r.servings ? `<span><i class="fa-solid fa-utensils text-emerald-400 mr-1"></i>Serves <strong class="text-slate-200">${esc(r.servings)}</strong></span>` : ''}
+          ${nutritionFor(r, p)?.calories != null ? `<span><i class="fa-solid fa-heart-pulse text-lime-300 mr-1"></i><strong class="text-slate-200">${Math.round(nutritionFor(r, p).calories)}</strong> kcal · <strong class="text-slate-200">${fmtN(nutritionFor(r, p).protein, 'g')}</strong> protein / serving</span>` : ''}
         </div>`;
 
       const proteinPicker = r.proteins.length ? `
@@ -1043,6 +1154,7 @@
           <div class="flex flex-wrap gap-2">${stackBadges(r, true)}</div>
         </div>` : ''}
         ${proteinPicker}
+        ${nutritionPanel(r, p)}
         <div>
           <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3"><i class="fa-solid fa-basket-shopping text-emerald-400 mr-1.5"></i>Ingredients</h4>
           <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-slate-300">
@@ -1286,6 +1398,10 @@
              ['fa-solid fa-cubes', 'text-sky-400', 'Yield', b.yield || '—'], ['fa-solid fa-snowflake', 'text-emerald-400', 'Storage', b.storage || '—']]
             .map(([i, c, l, v]) => `<div class="rounded-xl p-3 bg-slate-900/70 border border-slate-800"><p class="text-[10px] uppercase tracking-wider text-slate-500"><i class="${i} ${c} mr-1"></i>${l}</p><p class="text-xs font-semibold text-slate-200 mt-1">${esc(v)}</p></div>`).join('')}
         </div>
+        ${b.nutrition ? `<div class="rounded-xl px-3 py-2.5 bg-slate-900/70 border border-slate-800 text-xs text-slate-400 flex flex-wrap gap-x-3 gap-y-1">
+          <span class="text-[10px] uppercase tracking-wider text-lime-300 font-bold"><i class="fa-solid fa-heart-pulse mr-1"></i>Per cube</span>
+          ${NUTRIENTS.filter(d => b.nutrition[d.key] != null).map(d => `<span>${d.label.replace('Total ', '').replace('Dietary ', '')} <strong class="text-slate-200">${fmtN(b.nutrition[d.key], d.unit)}</strong></span>`).join('')}
+        </div>` : ''}
         ${b.bestFor.length ? `<div><h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Best for</h4><div class="flex flex-wrap gap-1.5">${b.bestFor.map(x => `<span class="px-2.5 py-1 rounded-lg text-xs border ${blockDef(b.kind, b.id).off}">${esc(x)}</span>`).join('')}</div></div>` : ''}
         <div>
           <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3"><i class="fa-solid fa-basket-shopping text-emerald-400 mr-1.5"></i>Ingredients (one batch)</h4>

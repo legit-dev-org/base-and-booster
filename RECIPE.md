@@ -104,6 +104,7 @@ The **Freezer Blocks** button on the page shows how to make each Structural Base
 | `ingredients` | array | | Same format as recipe [`ingredients`](#ingredients). Set `aisle` so the prep shopping list groups cleanly. |
 | `steps` | array | | Same format as recipe [`steps`](#steps). |
 | `notes` | string[] | | Tips and substitutions. |
+| `nutrition` | object | | Nutrition **per cube**, using the same keys as recipe [`nutrition`](#nutrition). Shown in the block guide. |
 
 Importing a block with the same `kind` + `id` as an existing one replaces it. A recipe can use a block that has no `blocks` entry; it still works, and the guide shows a "no prep recipe yet" note for it.
 
@@ -118,7 +119,8 @@ Importing a block with the same `kind` + `id` as an existing one replaces it. A 
 | `id` | string | ✅ | Unique, stable identifier, such as `"chipotle-taco-skillet"`. It's normalized to lowercase-kebab-case. **Importing a recipe with an `id` that already exists replaces that recipe.** |
 | `title` | string | ✅ | Display name. |
 | `description` | string | | One or two sentences shown on the card and in the recipe view. |
-| `servings` | number \| string | | `2` or `"12 halves"`. |
+| `servings` | number | | How many servings the recipe makes, e.g. `4`. All `nutrition` values are **per serving**. |
+| `servingSize` | string | | Optional description of one serving, such as `"1 egg half"` or `"about 1½ cups"`. Shown next to the nutrition facts. |
 | `tags` | string[] | | Free-form keywords like `"one-pan"`, `"meal-prep"`, `"freezer-friendly"`. They show on the recipe and are **searchable**, but they don't get a filter group. |
 
 ### Time
@@ -273,6 +275,52 @@ Steps are numbered automatically, and variant steps that are hidden aren't count
 
 An array of strings shown as **Notes & Swaps**. Use it for storage tips, substitutions, and ways to scale the recipe up or down.
 
+### `nutrition`
+
+Nutrition facts **per serving** (total recipe ÷ `servings`), including the freezer cubes. They're shown on the recipe card (calories, protein, fiber), as a full Nutrition Facts panel in the recipe view, and they power the **Protein**, **Fiber**, and **Calories** sort options.
+
+```json
+"servings": 4,
+"nutrition": {
+  "calories": 520,
+  "totalFat": 22,
+  "saturatedFat": 6,
+  "cholesterol": 140,
+  "sodium": 780,
+  "carbohydrates": 41,
+  "fiber": 7,
+  "sugar": 6,
+  "protein": 38
+}
+```
+
+| Key | Unit | Notes |
+|---|---|---|
+| `calories` | kcal | |
+| `totalFat` | g | alias `fat` |
+| `saturatedFat` | g | alias `satFat` |
+| `cholesterol` | mg | |
+| `sodium` | mg | |
+| `carbohydrates` | g | alias `carbs` |
+| `fiber` | g | |
+| `sugar` | g | total sugars, alias `sugars` |
+| `protein` | g | |
+
+Every key is optional. Values can be numbers or strings like `"32g"`. Recipes without `nutrition` still work; they just sort to the bottom when you sort by a nutrient.
+
+**`nutritionByProtein`** (optional) gives a separate panel for each protein in a [variant recipe](#-protein-variants), keyed by protein value. The recipe view switches panels when you change the **Cook it with** pick, and the nutrient sorts use the variant that matches your active protein filter. `nutrition` should equal the panel for the first protein listed.
+
+```json
+"proteins": ["ground-meat", "turkey"],
+"nutrition":          { "calories": 740, "protein": 42, "fiber": 2.5 },
+"nutritionByProtein": {
+  "ground-meat": { "calories": 740, "protein": 42, "fiber": 2.5 },
+  "turkey":      { "calories": 484, "protein": 46, "fiber": 2.5 }
+}
+```
+
+> The default recipes' values are **estimates** calculated from each ingredient's quantity (USDA-style reference values) plus the per-cube nutrition of the freezer blocks used. Optional ingredients and salt added "to taste" are not included.
+
 ---
 
 ## 🔀 Protein variants
@@ -333,3 +381,4 @@ If a recipe lists several proteins but has no variant ingredients or steps, they
 - [ ] Ingredients have an `aisle` so the shopping list groups cleanly.
 - [ ] Protein-specific ingredients and steps are tagged with `protein`.
 - [ ] Steps include heat level, timing, and how to tell when it's done.
+- [ ] `servings` is a number and `nutrition` is **per serving** (add `nutritionByProtein` for variant recipes).
