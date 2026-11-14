@@ -190,6 +190,8 @@
             <option value="protein">Protein (most per serving)</option>
             <option value="fiber">Fiber (most per serving)</option>
             <option value="calories">Calories (lowest per serving)</option>
+            <option value="ratingAdult">Rating — adults (highest)</option>
+            <option value="ratingKid">Rating — kids (highest)</option>
           </select>
         </label>
         </div>
@@ -611,6 +613,11 @@
     ];
     // Sort options that rank by a nutrient: [nutrient key, direction]
     const NUTRITION_SORTS = { protein: ['protein', -1], fiber: ['fiber', -1], calories: ['calories', 1] };
+    const RATING_SORTS = { ratingAdult: 'adult', ratingKid: 'kid' };
+    const RATERS = [
+      { key: 'adult', label: 'Adults', icon: 'fa-user', on: 'bg-amber-400 border-amber-300 text-slate-950', text: 'text-amber-300' },
+      { key: 'kid',   label: 'Kids',   icon: 'fa-child', on: 'bg-pink-400 border-pink-300 text-slate-950',  text: 'text-pink-300' }
+    ];
 
     // Weeknight staples checklist (freezer-prep groceries are built from the block recipes)
     const STAPLES = [
@@ -632,6 +639,18 @@
     // STATE & STORAGE
     // =========================================================================
     function toArrStrings(v) { return (Array.isArray(v) ? v : []).filter(x => typeof x === 'string'); }
+
+    // { id: { adult: 1-10, kid: 1-10 } } — keep only valid whole-number scores.
+    function cleanRatings(raw) {
+      const out = {};
+      if (!raw || typeof raw !== 'object') return out;
+      Object.entries(raw).forEach(([id, v]) => {
+        const r = {};
+        ['adult', 'kid'].forEach(k => { const n = Number(v?.[k]); if (Number.isInteger(n) && n >= 1 && n <= 10) r[k] = n; });
+        if (Object.keys(r).length) out[id] = r;
+      });
+      return out;
+    }
 
     // Everything a user changes lives in ONE localStorage object ("session state"), loaded on launch.
     const SESSION_KEY = 'bb.session.v1';
@@ -662,6 +681,7 @@
         introSeen: !!raw.introSeen,
         favorites: Array.isArray(raw.favorites) ? raw.favorites.filter(x => typeof x === 'string') : [],
         mods: isObj(raw.mods) ? raw.mods : {},
+        ratings: cleanRatings(raw.ratings),
         prefs: {
           sort: typeof prefs.sort === 'string' ? prefs.sort : 'default',
           favOnly: !!prefs.favOnly,
@@ -679,7 +699,7 @@
         imported: state.imported, importedBlocks: state.importedBlocks,
         importedFoods: state.importedFoods, importedSwaps: state.importedSwaps,
         plan: state.plan, planBlocks: state.planBlocks, checked: state.checked,
-        introSeen: state.introSeen, favorites: state.favorites, mods: state.mods,
+        introSeen: state.introSeen, favorites: state.favorites, mods: state.mods, ratings: state.ratings,
         prefs: { sort: state.sort, favOnly: state.favOnly, shopTab: state.shopTab, filters: state.filters }
       };
       try {
@@ -720,6 +740,7 @@
       introSeen: session.introSeen,
       favorites: session.favorites,               // [recipe id]
       mods: session.mods,                         // recipe id -> { protein, servings, swaps: { ingredientIndex: foodKey }, savedAt }
+      ratings: session.ratings,                   // recipe id -> { adult: 1-10, kid: 1-10 } (independent)
       modal: { id: null, protein: null, servings: 1, swaps: {} },
       shopTab: session.prefs.shopTab
     };
@@ -1031,6 +1052,48 @@
         class="${big ? 'px-3 py-2 rounded-xl text-xs font-bold' : 'w-7 h-7 rounded-lg text-xs'} border transition ${on ? 'bg-rose-500/20 border-rose-400/60 text-rose-300' : 'border-slate-700 bg-slate-800 text-slate-400 hover:text-rose-300'}">
         <i class="fa-${on ? 'solid' : 'regular'} fa-heart"></i>${big ? `<span class="ml-1.5">${on ? 'Favorited' : 'Favorite'}</span>` : ''}</button>`;
     };
+    function setRating(id, who, value) {
+      const r = state.byId.get(id);
+      const cur = { ...(state.ratings[id] || {}) };
+      const clearing = cur[who] === value;            // tapping the current score clears it
+      if (clearing) delete cur[who]; else cur[who] = value;
+      if (Object.keys(cur).length) state.ratings[id] = cur; else delete state.ratings[id];
+      const label = who === 'adult' ? 'Adults' : 'Kids';
+      toast(clearing ? `Cleared the ${label.toLowerCase()} rating for “${r?.title || id}”` : `${label} rated “${r?.title || id}” ${value}/10`);
+      saveSession();
+    }
+    // Small "★ 8 · ★ 6" chips for cards (only the scores that exist).
+    function ratingChips(id) {
+      const rt = state.ratings[id];
+      if (!rt) return '';
+      const hl = RATING_SORTS[state.sort];
+      return `<div class="flex flex-wrap gap-1.5 mb-2">${RATERS.filter(x => rt[x.key] != null).map(x => `
+        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${hl === x.key ? 'border-amber-400/60 bg-amber-400/10' : 'border-slate-700 bg-slate-900/60'} ${x.text}" title="${x.label} rating">
+          <i class="fa-solid ${x.icon} mr-1"></i>${x.label} ${rt[x.key]}/10</span>`).join('')}</div>`;
+    }
+    function ratingPanel(r) {
+      const rt = state.ratings[r.id] || {};
+      return `
+        <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="flex items-baseline justify-between gap-2 mb-3">
+            <h4 class="text-xs font-bold text-amber-300 uppercase tracking-wider"><i class="fa-solid fa-star mr-1.5"></i>Rate it</h4>
+            <span class="text-[11px] text-slate-500">1 = never again · 10 = make it weekly. Tap a score again to clear it.</span>
+          </div>
+          <div class="space-y-2.5">
+            ${RATERS.map(x => `
+            <div class="flex flex-wrap items-center gap-2" role="group" aria-label="${x.label} rating">
+              <span class="w-20 text-xs font-semibold ${x.text}"><i class="fa-solid ${x.icon} mr-1.5"></i>${x.label}</span>
+              <div class="flex flex-wrap gap-1">
+                ${Array.from({ length: 10 }, (_, i) => i + 1).map(v => `
+                  <button data-rate="${x.key}:${v}" aria-pressed="${rt[x.key] === v}" aria-label="${x.label} ${v} out of 10"
+                    class="w-7 h-7 rounded-md border text-xs font-bold transition ${rt[x.key] === v ? x.on : rt[x.key] != null && v < rt[x.key] ? `border-slate-600 bg-slate-800 ${x.text}` : 'border-slate-700 bg-slate-900 text-slate-400 hover:text-white hover:border-slate-500'}">${v}</button>`).join('')}
+              </div>
+              <span class="text-xs text-slate-400">${rt[x.key] != null ? `<strong class="text-slate-200">${rt[x.key]}</strong>/10` : 'not rated'}</span>
+            </div>`).join('')}
+          </div>
+        </div>`;
+    }
+
     // "8 servings · Turkey · 2 swaps"
     function configSummary(r, cfg) {
       const parts = [];
@@ -1058,6 +1121,15 @@
           const x = val(a), y = val(b);
           if (x == null || y == null) return (x == null) - (y == null) || a._order - b._order;
           return dir * (x - y) || a._order - b._order;
+        });
+      }
+      else if (RATING_SORTS[state.sort]) {
+        const who = RATING_SORTS[state.sort];
+        const val = r => state.ratings[r.id]?.[who];
+        list.sort((a, b) => {
+          const x = val(a), y = val(b);
+          if (x == null || y == null) return (x == null) - (y == null) || a._order - b._order;   // unrated last
+          return y - x || a._order - b._order;
         });
       }
       else list.sort((a, b) => a._order - b._order);
@@ -1262,6 +1334,7 @@
               ${tag(`${r.totalMinutes} min`, timeTagClass(r.totalMinutes), 'fa-clock')}
             </div>
             <h4 class="font-display font-bold text-base text-white group-hover:text-amber-300 transition-colors mb-1.5">${esc(r.title)}</h4>
+            ${ratingChips(r.id)}
             ${saved ? `<p class="text-[10px] font-semibold text-sky-300 mb-1.5" title="Cards, sorting and the meal plan use your saved version"><i class="fa-solid fa-bookmark mr-1"></i>Your version · ${esc(configSummary(r, saved))}</p>` : ''}
             ${r.description ? `<p class="text-xs text-slate-400 line-clamp-2 mb-3">${esc(r.description)}</p>` : ''}
             <div class="flex flex-wrap gap-1.5 mb-3">${stackBadges(r, false)}</div>
@@ -1450,6 +1523,7 @@
               </div>`).join('') || '<p class="text-slate-500 text-xs">No steps listed.</p>'}
           </div>
         </div>
+        ${ratingPanel(r)}
         ${nutritionPanel(r, cfg)}
         ${r.notes.length ? `
         <div class="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
@@ -2088,7 +2162,7 @@
 
     function attachEvents() {
       document.addEventListener('click', e => {
-        const t = e.target.closest('[data-axis],[data-clear-axis],[data-remove-axis],[data-remove-search],[data-plan],[data-open],[data-variant],[data-close],[data-shop-tab],[data-unplan],[data-clear-plan],[data-block],[data-block-filter],[data-prep-toggle],[data-prep-all],[data-prep-shop],[data-plan-block],[data-unplan-block],[data-fav],[data-servings],[data-swap-reset],[data-mod-save],[data-mod-reset],[data-modal-plan]');
+        const t = e.target.closest('[data-axis],[data-clear-axis],[data-remove-axis],[data-remove-search],[data-plan],[data-open],[data-variant],[data-close],[data-shop-tab],[data-unplan],[data-clear-plan],[data-block],[data-block-filter],[data-prep-toggle],[data-prep-all],[data-prep-shop],[data-plan-block],[data-unplan-block],[data-fav],[data-servings],[data-swap-reset],[data-mod-save],[data-mod-reset],[data-modal-plan],[data-rate]');
         if (!t) return;
         const d = t.dataset;
         if (d.axis) return toggleFilter(d.axis, d.value);
@@ -2103,6 +2177,11 @@
         if (d.variant) { state.modal.protein = d.variant; return rerenderModalKeepScroll(); }
         if (d.servings) { state.modal.servings = Math.max(1, Math.min(99, Number(d.servings) || 1)); return rerenderModalKeepScroll(); }
         if ('swapReset' in d) { state.modal.swaps = {}; return rerenderModalKeepScroll(); }
+        if (d.rate) {
+          const [who, v] = d.rate.split(':');
+          setRating(state.modal.id, who, Number(v));
+          rerenderModalKeepScroll(); return renderGrid();
+        }
         if ('modSave' in d) return saveMods();
         if ('modReset' in d) return resetMods();
         if ('modalPlan' in d) { planFromModal(); renderModalFooter(state.byId.get(state.modal.id), modalConfig()); return renderGrid(); }

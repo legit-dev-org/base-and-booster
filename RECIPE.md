@@ -410,12 +410,13 @@ Everything you change in the page is kept in **one** `localStorage` entry, `bb.s
 |---|---|
 | `favorites` | Recipe ids you've hearted. The **Favorites** button above the grid shows only these. |
 | `mods` | Your saved versions: `{ "<recipe id>": { "protein", "servings", "swaps": { "<ingredient index>": "<food key>" } } }`. Cards, sorting and new meal-plan entries use them. **Reset to original** deletes one. |
+| `ratings` | Your scores: `{ "<recipe id>": { "adult": 1-10, "kid": 1-10 } }`. Adult and kid ratings are independent; either can be missing. They power the **Rating — adults** / **Rating — kids** sorts. |
 | `plan` | Meal-plan entries `{ id, protein, servings, swaps }`, so the grocery list is scaled and uses swapped items. |
 | `planBlocks` | Freezer-block batches on the shopping list. |
 | `checked` | Ticked shopping-list items. |
 | `imported`, `importedBlocks`, `importedFoods`, `importedSwaps` | Everything you imported. |
 | `introSeen` | Whether the intro has been shown. |
-| `prefs` | Sort order, active filters, the Favorites toggle, and the last shopping-list tab. |
+| `prefs` | Sort order (including rating sorts), active filters, the Favorites toggle, and the last shopping-list tab. |
 
 Older versions stored these under separate `bb.*.v1` keys. They're migrated into `bb.session.v1` automatically on first load, then removed. A saved swap that no longer fits a recipe (for example after importing a changed version) is ignored.
 - **Export** downloads your whole merged library as a single `recipes.json`. Use it to share recipes or to make your imports the new defaults by committing the file.
