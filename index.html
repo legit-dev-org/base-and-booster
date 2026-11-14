@@ -631,7 +631,7 @@
     // =========================================================================
     // STATE & STORAGE
     // =========================================================================
-    const LS = { imported: 'bb.importedRecipes.v1', plan: 'bb.mealPlan.v1', checked: 'bb.checked.v1', introSeen: 'bb.introSeen.v1', importedBlocks: 'bb.importedBlocks.v1' };
+    const LS = { imported: 'bb.importedRecipes.v1', plan: 'bb.mealPlan.v1', checked: 'bb.checked.v1', introSeen: 'bb.introSeen.v1', importedBlocks: 'bb.importedBlocks.v1', planBlocks: 'bb.planBlocks.v1' };
     const store = {
       get(k, fallback) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch { return fallback; } },
       set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
@@ -654,6 +654,7 @@
       search: '',
       sort: 'default',
       plan: store.get(LS.plan, []),           // [{ id, protein }]
+      planBlocks: store.get(LS.planBlocks, []), // freezer-block batches on the shopping list: ["base:1", ...]
       checked: store.get(LS.checked, {}),
       modal: { id: null, protein: null },
       shopTab: 'plan'
@@ -929,6 +930,7 @@
     };
     const stackBadges = (r, big) => r.bases.map(b => blockBadge(b, 'bases', 'B', big)).join('') + r.boosters.map(b => blockBadge(b, 'boosters', big ? 'Booster ' : 'F', big)).join('');
     const inPlan = id => state.plan.some(p => p.id === id);
+    const planSize = () => state.plan.length + state.planBlocks.length;
 
     function sortedFiltered() {
       const list = state.recipes.filter(r => matches(r));
@@ -1082,8 +1084,8 @@
 
     function renderPlanBadge() {
       const b = $('planCountBadge');
-      b.textContent = state.plan.length;
-      b.classList.toggle('hidden', state.plan.length === 0);
+      b.textContent = planSize();
+      b.classList.toggle('hidden', planSize() === 0);
     }
 
     function renderAll() {
@@ -1197,7 +1199,28 @@
     // =========================================================================
     // MEAL PLAN & SHOPPING
     // =========================================================================
-    function savePlan() { store.set(LS.plan, state.plan); renderPlanBadge(); }
+    function savePlan() { store.set(LS.plan, state.plan); store.set(LS.planBlocks, state.planBlocks); renderPlanBadge(); }
+
+    const blockLabel = b => `${b.kind === 'base' ? 'Base' : 'Booster'} ${b.id}: ${b.name}`;
+    function togglePlanBlock(key) {
+      const b = state.blocks.get(key);
+      if (state.planBlocks.includes(key)) {
+        state.planBlocks = state.planBlocks.filter(k => k !== key);
+        toast(`Removed ${b ? `“${blockLabel(b)}”` : key} batch from the shopping list`);
+      } else {
+        if (!b || !b.ingredients.length) return;
+        state.planBlocks.push(key);
+        toast(`Added a batch of “${blockLabel(b)}” to the shopping list`);
+      }
+      savePlan();
+    }
+    // Toggle button used on block cards and the block detail footer.
+    const planBlockBtn = (b, big) => {
+      if (b.missing || !b.ingredients.length) return '';
+      const on = state.planBlocks.includes(b.key);
+      return `<button data-plan-block="${esc(b.key)}" class="${big ? 'px-4 py-2 text-xs rounded-xl' : 'px-2.5 py-1 text-[11px] rounded-lg'} border font-semibold transition ${on ? 'bg-emerald-500 border-emerald-400 text-slate-950' : 'border-slate-700 bg-slate-800 text-slate-300 hover:text-white'}">
+        ${on ? `<i class="fa-solid fa-check mr-1"></i>${big ? 'On shopping list' : 'Listed'}` : `<i class="fa-solid fa-plus mr-1"></i>${big ? 'Add batch to shopping list' : 'Shop'}`}</button>`;
+    };
 
     function togglePlan(id, protein) {
       const r = state.byId.get(id);
@@ -1232,6 +1255,19 @@
           const g = map.get(key);
           if (i.qty) g.qtys.push(i.qty);
           g.recipes.add(r.title);
+          g.optional = g.optional && i.optional;
+        });
+      });
+      state.planBlocks.forEach(key => {
+        const b = state.blocks.get(key);
+        if (!b || b.missing) { missing.push(key); return; }
+        const label = `${b.kind === 'base' ? 'Base' : 'Booster'} ${b.id} batch`;
+        b.ingredients.forEach(i => {
+          const k = `${i.aisle}|${i.item.toLowerCase()}`;
+          if (!map.has(k)) map.set(k, { key: `plan|${k}`, item: i.item, aisle: i.aisle, qtys: [], recipes: new Set(), optional: true });
+          const g = map.get(k);
+          if (i.qty) g.qtys.push(i.qty);
+          g.recipes.add(label);
           g.optional = g.optional && i.optional;
         });
       });
@@ -1337,7 +1373,7 @@
           <p class="text-sm text-slate-400 mt-1">The prep recipes for every Structural Base and Flavor Booster. Pick one to see how it's made.</p>`;
         const card = x => {
           const used = recipesUsingBlock(x).length;
-          return `<button data-block="${esc(x.key)}" class="glass-card text-left rounded-2xl p-4 flex gap-4 items-start group">
+          return `<div data-block="${esc(x.key)}" role="button" tabindex="0" class="glass-card text-left rounded-2xl p-4 flex gap-4 items-start group cursor-pointer">
             ${cubeHtml(x, 'w-14 h-14 text-xl')}
             <div class="min-w-0">
               <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">${x.kind === 'base' ? `Base ${esc(x.id)}` : `Booster ${esc(x.id)}`}</p>
@@ -1348,7 +1384,8 @@
                 <span><i class="fa-solid fa-utensils mr-1"></i>${used} recipe${used === 1 ? '' : 's'}</span>
               </p>
             </div>
-          </button>`;
+            <div class="ml-auto shrink-0 self-center">${planBlockBtn(x, false)}</div>
+          </div>`;
         };
         const section = (kind, title, color, sub) => {
           const list = blocks.filter(x => x.kind === kind);
@@ -1431,7 +1468,7 @@
       $('blocksFooter').innerHTML = `
         <div class="flex flex-wrap gap-2">
           ${used ? `<button data-block-filter="${esc(b.key)}" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition"><i class="fa-solid fa-filter mr-1.5"></i>Show ${used} recipe${used === 1 ? '' : 's'} using it</button>` : ''}
-          ${b.missing ? '' : `<button data-prep-shop="${esc(b.key)}" class="px-4 py-2 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-semibold text-xs rounded-xl transition"><i class="fa-solid fa-cart-shopping mr-1.5"></i>Shopping list</button>`}
+          ${planBlockBtn(b, true)}
         </div>
         <button data-close="blocksModal" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition">Close</button>`;
     }
@@ -1445,7 +1482,7 @@
     function renderShopping() {
       $('shopTabs').innerHTML = SHOP_TABS.map(t => {
         const on = state.shopTab === t.key;
-        const count = t.key === 'plan' && state.plan.length ? ` <span class="ml-1 text-[10px] px-1.5 rounded-full bg-emerald-500/20 text-emerald-300">${state.plan.length}</span>` : '';
+        const count = t.key === 'plan' && planSize() ? ` <span class="ml-1 text-[10px] px-1.5 rounded-full bg-emerald-500/20 text-emerald-300">${planSize()}</span>` : '';
         return `<button data-shop-tab="${t.key}" class="pb-3 border-b-2 font-display font-bold text-sm flex items-center gap-2 transition ${on ? `border-${t.color}-400 text-${t.color}-400` : 'border-transparent text-slate-400 hover:text-slate-200'}"><i class="fa-solid ${t.icon}"></i>${t.label}${count}</button>`;
       }).join('');
 
@@ -1488,12 +1525,12 @@
         return;
       }
 
-      if (!state.plan.length) {
+      if (!planSize()) {
         body.innerHTML = `
           <div class="text-center py-10">
             <div class="w-14 h-14 bg-slate-800/80 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-3 text-xl border border-slate-700"><i class="fa-solid fa-calendar-plus"></i></div>
             <h4 class="font-display font-bold text-lg text-white mb-1">Your meal plan is empty</h4>
-            <p class="text-sm text-slate-400 max-w-sm mx-auto">Hit <strong class="text-emerald-300">+ Plan</strong> on any recipe. Its ingredients will be combined here into one grocery list, along with the freezer cubes you'll need.</p>
+            <p class="text-sm text-slate-400 max-w-sm mx-auto">Hit <strong class="text-emerald-300">+ Plan</strong> on any recipe. Its ingredients will be combined here into one grocery list, along with the freezer cubes you'll need. You can also add a batch of any freezer block from <button data-block="list" class="text-sky-300 hover:text-sky-200 font-semibold">Freezer Blocks</button>.</p>
           </div>`;
         return;
       }
@@ -1507,7 +1544,7 @@
       body.innerHTML = `
         <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
           <div class="flex items-center justify-between mb-3">
-            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-calendar-check mr-1.5"></i>Planned meals (${state.plan.length})</h4>
+            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-calendar-check mr-1.5"></i>${state.plan.length ? `Planned meals (${state.plan.length})` : 'Shopping for'}</h4>
             <button data-clear-plan class="text-[11px] text-slate-400 hover:text-rose-300"><i class="fa-solid fa-trash mr-1"></i>Clear plan</button>
           </div>
           <ul class="space-y-1.5 text-sm">
@@ -1520,6 +1557,18 @@
               </li>`;
             }).join('')}
           </ul>
+          ${state.planBlocks.length ? `
+          <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider mt-4 mb-2"><i class="fa-solid fa-cubes-stacked mr-1.5"></i>Freezer block batches (${state.planBlocks.length})</h4>
+          <ul class="space-y-1.5 text-sm">
+            ${state.planBlocks.map(key => {
+              const b = state.blocks.get(key);
+              return `<li class="flex items-center justify-between gap-2">
+                ${b && !b.missing ? `<button data-block="${esc(key)}" class="text-left text-slate-200 hover:text-sky-300 flex items-center gap-2">${cubeHtml(b, 'w-6 h-6 text-[10px] !rounded-md')}<span>${esc(blockLabel(b))}${b.yield ? ` <span class="text-xs text-slate-500">· ${esc(b.yield.replace(/\s*\(.*\)/, ''))}</span>` : ''}</span></button>`
+                  : `<span class="text-slate-500">${esc(key)} <span class="text-xs">(block not in library)</span></span>`}
+                <button data-unplan-block="${esc(key)}" class="text-slate-500 hover:text-rose-300 text-xs" aria-label="Remove"><i class="fa-solid fa-xmark"></i></button>
+              </li>`;
+            }).join('')}
+          </ul>` : ''}
         </div>
         ${cubeBadges.length ? `
         <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
@@ -1533,21 +1582,23 @@
               <ul class="space-y-2 text-xs">
                 ${byAisle[a].map(g => checkItem(g.key,
                   `${g.qtys.length ? `<strong class="text-slate-100">${esc(combineQtys(g.qtys).join(' + '))}</strong> ` : ''}${esc(g.item)}${g.optional ? ' <span class="text-[10px] text-slate-500 uppercase">optional</span>' : ''}`,
-                  state.plan.length > 1 ? esc([...g.recipes].join(', ')) : '')).join('')}
+                  planSize() > 1 ? esc([...g.recipes].join(', ')) : '')).join('')}
               </ul>
             </div>`).join('')}
         </div>
-        ${missing.length ? `<p class="text-xs text-rose-300">${missing.length} planned recipe(s) are no longer in your library and were skipped.</p>` : ''}`;
+        ${missing.length ? `<p class="text-xs text-rose-300">${missing.length} planned item(s) are no longer in your library and were skipped.</p>` : ''}`;
     }
 
     function shoppingText() {
       const box = k => state.checked[k] ? '[x]' : '[ ]';
       const lines = [];
       if (state.shopTab === 'plan') {
-        if (!state.plan.length) return '';
+        if (!planSize()) return '';
         const { aisleOrder, byAisle, cubes } = planGroceries();
-        lines.push('MEAL PLAN');
+        if (state.plan.length) lines.push('MEAL PLAN');
         state.plan.forEach(e => { const r = state.byId.get(e.id); if (r) lines.push(`- ${r.title}${e.protein && r.proteins.length > 1 ? ` (${labelFor('proteins', e.protein)})` : ''}`); });
+        const pb = state.planBlocks.map(k => state.blocks.get(k)).filter(b => b && !b.missing);
+        if (pb.length) { if (state.plan.length) lines.push(''); lines.push('FREEZER BLOCK BATCHES', ...pb.map(b => `- ${blockLabel(b)}`)); }
         const c = [...Object.entries(cubes.bases).map(([id, n]) => `${n}x Base ${id} ${blockDef('bases', id).name}`), ...Object.entries(cubes.boosters).map(([id, n]) => `${n}x Booster ${id} ${blockDef('boosters', id).name}`)];
         if (c.length) lines.push('', 'FREEZER CUBES', ...c.map(x => `- ${x}`));
         aisleOrder.forEach(a => {
@@ -1686,7 +1737,7 @@
 
     function attachEvents() {
       document.addEventListener('click', e => {
-        const t = e.target.closest('[data-axis],[data-clear-axis],[data-remove-axis],[data-remove-search],[data-plan],[data-open],[data-variant],[data-close],[data-shop-tab],[data-unplan],[data-clear-plan],[data-block],[data-block-filter],[data-prep-toggle],[data-prep-all],[data-prep-shop]');
+        const t = e.target.closest('[data-axis],[data-clear-axis],[data-remove-axis],[data-remove-search],[data-plan],[data-open],[data-variant],[data-close],[data-shop-tab],[data-unplan],[data-clear-plan],[data-block],[data-block-filter],[data-prep-toggle],[data-prep-all],[data-prep-shop],[data-plan-block],[data-unplan-block]');
         if (!t) return;
         const d = t.dataset;
         if (d.axis) return toggleFilter(d.axis, d.value);
@@ -1695,7 +1746,9 @@
         if ('removeSearch' in d) { $('clearSearch').click(); return; }
         if (d.plan) { e.stopPropagation(); togglePlan(d.plan); return renderGrid(); }
         if (d.unplan) { state.plan = state.plan.filter(p => p.id !== d.unplan); savePlan(); renderShopping(); return renderGrid(); }
-        if ('clearPlan' in d) { state.plan = []; savePlan(); renderShopping(); return renderGrid(); }
+        if ('clearPlan' in d) { state.plan = []; state.planBlocks = []; savePlan(); renderShopping(); return renderGrid(); }
+        if (d.planBlock) { e.stopPropagation(); togglePlanBlock(d.planBlock); if (!$('blocksModal').classList.contains('closed')) renderBlocks(); return; }
+        if (d.unplanBlock) { state.planBlocks = state.planBlocks.filter(k => k !== d.unplanBlock); savePlan(); return renderShopping(); }
         if (d.variant) { state.modal.protein = d.variant; return renderModal(); }
         if (d.close) return closeModal(d.close);
         if (d.block) {
@@ -1730,6 +1783,11 @@
       $('recipeGrid').addEventListener('keydown', e => {
         const card = e.target.closest('[data-open]');
         if (card && (e.key === 'Enter' || e.key === ' ') && e.target === card) { e.preventDefault(); openRecipe(card.dataset.open); }
+      });
+
+      $('blocksBody').addEventListener('keydown', e => {
+        const card = e.target.closest('[role="button"][data-block]');
+        if (card && (e.key === 'Enter' || e.key === ' ') && e.target === card) { e.preventDefault(); card.click(); }
       });
 
       $('modalPlanBtn').addEventListener('click', () => {
@@ -1767,8 +1825,8 @@
       });
 
       $('openShoppingListBtn').addEventListener('click', () => {
-        if (!state.plan.length && state.shopTab === 'plan') state.shopTab = 'freezer';
-        else if (state.plan.length) state.shopTab = 'plan';
+        if (!planSize() && state.shopTab === 'plan') state.shopTab = 'freezer';
+        else if (planSize()) state.shopTab = 'plan';
         renderShopping(); openModal('shoppingModal');
       });
       $('shopBody').addEventListener('change', e => {

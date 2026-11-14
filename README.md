@@ -43,7 +43,7 @@ The Stacking Studio ships with **365 curated recipes — one for every day of th
 * **Filter recipes** by meal, total time, protein, culture, starch, freezer base, and booster.
 * **View recipes** with the full freezer-block stack, ingredients, and step-by-step method.
 * **Check nutrition and sort by it.** Every recipe has per-serving nutrition facts (calories, fat, saturated fat, cholesterol, sodium, carbs, fiber, sugar, protein) that follow the protein you cook it with. Sort the library by most protein, most fiber, or fewest calories.
-* **Learn to make the freezer blocks.** The **Freezer Blocks** button has the full prep recipe for every base and booster: ingredients, method, yield, and storage.
+* **Learn to make the freezer blocks.** The **Freezer Blocks** button has the full prep recipe for every base and booster: ingredients, method, yield, and storage. Hit **Add batch to shopping list** on any block to put its ingredients on your shopping list next to your planned meals, and remove it with the × just like a meal.
 * **Build a meal plan and shopping list.** Add recipes to your plan to get a merged grocery list grouped by aisle, plus how many freezer cubes to pull. The batch-prep and weeknight-staples checklists are there too.
 
 The 365 default recipes load from [`recipes.json`](recipes.json). Because browsers block reading local files, serve the folder instead of opening the HTML directly:
