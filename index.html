@@ -179,6 +179,8 @@
           <h3 class="font-display font-bold text-lg text-white">Recipes</h3>
           <span id="matchCounter" class="px-2.5 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-bold">Loading…</span>
         </div>
+        <div class="flex flex-wrap items-center gap-2">
+        <button id="favOnlyBtn" type="button" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition"></button>
         <label class="flex items-center gap-2 text-xs text-slate-400">
           <span>Sort by:</span>
           <select id="sortSelect" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-200 text-xs focus:outline-none focus:border-amber-400">
@@ -190,6 +192,7 @@
             <option value="calories">Calories (lowest per serving)</option>
           </select>
         </label>
+        </div>
       </div>
 
       <div id="activeFiltersBar" class="hidden glass-panel rounded-xl px-4 py-3 border border-amber-500/30 flex flex-wrap items-center gap-2">
@@ -223,10 +226,7 @@
         </button>
       </div>
       <div id="modalBody" class="p-6 overflow-y-auto flex-1 space-y-6"></div>
-      <div class="p-4 bg-slate-900 border-t border-slate-800 flex flex-wrap justify-between gap-2">
-        <button id="modalPlanBtn" class="px-4 py-2 rounded-xl text-xs font-bold transition"></button>
-        <button data-close="recipeModal" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition">Close</button>
-      </div>
+      <div id="modalFooter" class="p-4 bg-slate-900 border-t border-slate-800 flex flex-wrap justify-between gap-2"></div>
     </div>
   </div>
 
@@ -631,18 +631,78 @@
     // =========================================================================
     // STATE & STORAGE
     // =========================================================================
-    const LS = { imported: 'bb.importedRecipes.v1', plan: 'bb.mealPlan.v1', checked: 'bb.checked.v1', introSeen: 'bb.introSeen.v1', importedBlocks: 'bb.importedBlocks.v1', planBlocks: 'bb.planBlocks.v1' };
-    const store = {
-      get(k, fallback) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch { return fallback; } },
-      set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
-    };
+    function toArrStrings(v) { return (Array.isArray(v) ? v : []).filter(x => typeof x === 'string'); }
 
+    // Everything a user changes lives in ONE localStorage object ("session state"), loaded on launch.
+    const SESSION_KEY = 'bb.session.v1';
+    const LEGACY_KEYS = { imported: 'bb.importedRecipes.v1', plan: 'bb.mealPlan.v1', checked: 'bb.checked.v1',
+      introSeen: 'bb.introSeen.v1', importedBlocks: 'bb.importedBlocks.v1', planBlocks: 'bb.planBlocks.v1' };
+    const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
+
+    function loadSession() {
+      let raw = null, migrated = false;
+      try { raw = JSON.parse(localStorage.getItem(SESSION_KEY)); } catch {}
+      if (!isObj(raw)) {
+        raw = {};
+        // One-time migration from the older per-feature keys.
+        Object.entries(LEGACY_KEYS).forEach(([k, key]) => {
+          try { const v = localStorage.getItem(key); if (v != null) { raw[k] = JSON.parse(v); migrated = true; } } catch {}
+        });
+      }
+      const prefs = isObj(raw.prefs) ? raw.prefs : {};
+      return {
+        migrated,
+        imported: isObj(raw.imported) ? raw.imported : {},
+        importedBlocks: isObj(raw.importedBlocks) ? raw.importedBlocks : {},
+        importedFoods: isObj(raw.importedFoods) ? raw.importedFoods : {},
+        importedSwaps: Array.isArray(raw.importedSwaps) ? raw.importedSwaps : [],
+        plan: Array.isArray(raw.plan) ? raw.plan.filter(e => isObj(e) && e.id) : [],
+        planBlocks: Array.isArray(raw.planBlocks) ? raw.planBlocks.filter(k => typeof k === 'string') : [],
+        checked: isObj(raw.checked) ? raw.checked : {},
+        introSeen: !!raw.introSeen,
+        favorites: Array.isArray(raw.favorites) ? raw.favorites.filter(x => typeof x === 'string') : [],
+        mods: isObj(raw.mods) ? raw.mods : {},
+        prefs: {
+          sort: typeof prefs.sort === 'string' ? prefs.sort : 'default',
+          favOnly: !!prefs.favOnly,
+          shopTab: typeof prefs.shopTab === 'string' ? prefs.shopTab : 'plan',
+          filters: isObj(prefs.filters) ? prefs.filters : {}
+        }
+      };
+    }
+
+    let saveTimer = null;
+    function saveSessionNow() {
+      clearTimeout(saveTimer); saveTimer = null;
+      const data = {
+        version: 1, savedAt: new Date().toISOString(),
+        imported: state.imported, importedBlocks: state.importedBlocks,
+        importedFoods: state.importedFoods, importedSwaps: state.importedSwaps,
+        plan: state.plan, planBlocks: state.planBlocks, checked: state.checked,
+        introSeen: state.introSeen, favorites: state.favorites, mods: state.mods,
+        prefs: { sort: state.sort, favOnly: state.favOnly, shopTab: state.shopTab, filters: state.filters }
+      };
+      try {
+        localStorage.setItem(SESSION_KEY, JSON.stringify(data));
+        Object.values(LEGACY_KEYS).forEach(k => localStorage.removeItem(k));
+      } catch (err) { console.warn('Could not save session state', err); }
+    }
+    // Debounced so fast typing / clicking doesn't serialize on every keystroke.
+    function saveSession() { if (!saveTimer) saveTimer = setTimeout(saveSessionNow, 150); }
+    window.addEventListener('pagehide', () => { if (saveTimer) saveSessionNow(); });
+
+    const session = loadSession();
     const emptyFilters = () => Object.fromEntries(AXES.map(a => [a.key, []]));
     const state = {
       defaults: [],
-      imported: store.get(LS.imported, {}),   // id -> { raw, source }
+      imported: session.imported,                 // id -> { raw, source }
       blockDefaults: [],                          // raw block recipes from recipes.json
-      importedBlocks: store.get(LS.importedBlocks, {}), // "base:1" -> { raw, source }
+      importedBlocks: session.importedBlocks,     // "base:1" -> { raw, source }
+      foodDefaults: {}, swapDefaults: [],         // raw "foods" / "swaps" from recipes.json
+      importedFoods: session.importedFoods,       // key -> raw food
+      importedSwaps: session.importedSwaps,       // [{ name, foods }]
+      foods: new Map(),                           // key -> { key, label, per100g }
+      swapIndex: new Map(),                       // food key -> [alternative food keys]
       blocks: new Map(),                          // "base:1" -> normalized block recipe
       blockView: null,                            // null = list, otherwise a block key
       prepSel: null,                              // Set of block keys for the freezer-prep list (null = all)
@@ -650,15 +710,20 @@
       byId: new Map(),
       loading: true,
       loadError: null,
-      filters: emptyFilters(),
+      filters: { ...emptyFilters(), ...Object.fromEntries(AXES.map(a => [a.key, toArrStrings(session.prefs.filters[a.key])])) },
       search: '',
-      sort: 'default',
-      plan: store.get(LS.plan, []),           // [{ id, protein }]
-      planBlocks: store.get(LS.planBlocks, []), // freezer-block batches on the shopping list: ["base:1", ...]
-      checked: store.get(LS.checked, {}),
-      modal: { id: null, protein: null },
-      shopTab: 'plan'
+      sort: session.prefs.sort,
+      favOnly: session.prefs.favOnly,
+      plan: session.plan,                         // [{ id, protein, servings, swaps }]
+      planBlocks: session.planBlocks,             // freezer-block batches on the shopping list: ["base:1", ...]
+      checked: session.checked,
+      introSeen: session.introSeen,
+      favorites: session.favorites,               // [recipe id]
+      mods: session.mods,                         // recipe id -> { protein, servings, swaps: { ingredientIndex: foodKey }, savedAt }
+      modal: { id: null, protein: null, servings: 1, swaps: {} },
+      shopTab: session.prefs.shopTab
     };
+    if (session.migrated) saveSessionNow();
 
     // =========================================================================
     // HELPERS
@@ -693,7 +758,7 @@
 
     function normIngredients(list) {
       return toArr(list).map(i => {
-        if (typeof i === 'string') return { item: i.trim(), qty: '', aisle: 'other', optional: false, protein: null, note: '' };
+        if (typeof i === 'string') return { item: i.trim(), qty: '', aisle: 'other', optional: false, protein: null, note: '', food: null, grams: null };
         if (!i || typeof i !== 'object') return null;
         return {
           item: String(i.item ?? '').trim(),
@@ -701,7 +766,9 @@
           aisle: slug(i.aisle) || 'other',
           optional: !!i.optional,
           protein: i.protein ? slug(i.protein) : null,
-          note: String(i.note ?? '').trim()
+          note: String(i.note ?? '').trim(),
+          food: i.food ? String(i.food).trim() : null,                 // key into the "foods" table
+          grams: i.grams != null && Number.isFinite(Number(i.grams)) && Number(i.grams) >= 0 ? Number(i.grams) : null
         };
       }).filter(i => i && i.item);
     }
@@ -822,6 +889,25 @@
       state.blockDefaults.forEach(raw => { const n = normalizeBlock(raw, 'default'); if (n.block) blocks.set(n.block.key, n.block); else console.warn('[recipes.json] skipped block:', n.error); });
       Object.values(state.importedBlocks).forEach(({ raw, source }) => { const n = normalizeBlock(raw, source); if (n.block) blocks.set(n.block.key, n.block); });
       state.blocks = blocks;
+      // Foods (per-100 g nutrition) and swap groups: defaults first, imports override / extend.
+      const foods = new Map();
+      [state.foodDefaults, state.importedFoods].forEach(src => Object.entries(src || {}).forEach(([key, raw]) => {
+        const per100g = normNutrition(raw?.per100g);
+        if (key && per100g) foods.set(key, { key, label: String(raw.label ?? '').trim() || titleCase(key), per100g });
+      }));
+      state.foods = foods;
+      const groups = new Map();
+      [...state.swapDefaults, ...state.importedSwaps].forEach(g => {
+        const list = toArr(g?.foods).map(String).filter(k => foods.has(k));
+        if (list.length > 1) groups.set(String(g.name ?? list.join('/')), list);
+      });
+      const idx = new Map();
+      groups.forEach(list => list.forEach(k => {
+        const alts = idx.get(k) || [];
+        list.forEach(o => { if (o !== k && !alts.includes(o)) alts.push(o); });
+        idx.set(k, alts);
+      }));
+      state.swapIndex = idx;
       state.options = Object.fromEntries(AXES.map(ax => [ax.key, axisOptions(ax)]));
       AXES.forEach(ax => { state.filters[ax.key] = state.filters[ax.key].filter(v => state.options[ax.key].includes(v)); });
     }
@@ -835,6 +921,7 @@
         const sel = state.filters[ax.key];
         if (sel.length && !ax.get(r).some(v => sel.includes(v))) return false;
       }
+      if (state.favOnly && !state.favorites.includes(r.id)) return false;
       if (state.search) {
         const words = state.search.split(/\s+/).filter(Boolean);
         if (!words.every(w => r._haystack.includes(w))) return false;
@@ -931,6 +1018,33 @@
     const stackBadges = (r, big) => r.bases.map(b => blockBadge(b, 'bases', 'B', big)).join('') + r.boosters.map(b => blockBadge(b, 'boosters', big ? 'Booster ' : 'F', big)).join('');
     const inPlan = id => state.plan.some(p => p.id === id);
     const planSize = () => state.plan.length + state.planBlocks.length;
+    const isFav = id => state.favorites.includes(id);
+    function toggleFav(id) {
+      const r = state.byId.get(id);
+      state.favorites = isFav(id) ? state.favorites.filter(x => x !== id) : [...state.favorites, id];
+      toast(isFav(id) ? `Saved “${r?.title || id}” to favorites` : `Removed “${r?.title || id}” from favorites`);
+      saveSession();
+    }
+    const favButton = (id, big) => {
+      const on = isFav(id);
+      return `<button data-fav="${esc(id)}" aria-pressed="${on}" aria-label="${on ? 'Remove from favorites' : 'Add to favorites'}" title="${on ? 'Remove from favorites' : 'Add to favorites'}"
+        class="${big ? 'px-3 py-2 rounded-xl text-xs font-bold' : 'w-7 h-7 rounded-lg text-xs'} border transition ${on ? 'bg-rose-500/20 border-rose-400/60 text-rose-300' : 'border-slate-700 bg-slate-800 text-slate-400 hover:text-rose-300'}">
+        <i class="fa-${on ? 'solid' : 'regular'} fa-heart"></i>${big ? `<span class="ml-1.5">${on ? 'Favorited' : 'Favorite'}</span>` : ''}</button>`;
+    };
+    // "8 servings · Turkey · 2 swaps"
+    function configSummary(r, cfg) {
+      const parts = [];
+      if (cfg.servings !== baseServings(r)) parts.push(`${cfg.servings} servings`);
+      if (r._hasVariants && cfg.protein && cfg.protein !== r.proteins[0]) parts.push(labelFor('proteins', cfg.protein));
+      if (swapCount(cfg)) parts.push(`${swapCount(cfg)} swap${swapCount(cfg) === 1 ? '' : 's'}`);
+      return parts.join(' · ') || 'original';
+    }
+    function renderFavBtn() {
+      const b = $('favOnlyBtn'), n = state.favorites.filter(id => state.byId.has(id)).length;
+      b.className = `px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${state.favOnly ? 'bg-rose-500/20 border-rose-400/60 text-rose-200' : 'border-slate-700 bg-slate-900 text-slate-300 hover:text-white'}`;
+      b.innerHTML = `<i class="fa-${state.favOnly ? 'solid' : 'regular'} fa-heart mr-1 text-rose-300"></i>Favorites <span class="ml-0.5 text-[10px] text-slate-400">${n}</span>`;
+      b.setAttribute('aria-pressed', state.favOnly);
+    }
 
     function sortedFiltered() {
       const list = state.recipes.filter(r => matches(r));
@@ -950,10 +1064,102 @@
       return list;
     }
 
-    // Nutrition for a recipe cooked with `protein` (defaults to the active protein filter / first protein).
-    function nutritionFor(r, protein) {
-      const p = protein === undefined ? defaultProteinFor(r) : protein;
-      return (p && r.nutritionByProtein[p]) || r.nutrition;
+    // ---------- servings scaling ----------
+    const baseServings = r => Math.max(1, Math.round(num(r.servings)) || 1);
+    const parseAmount = t => t.trim().split(/\s+/).reduce((sum, part) => {
+      const [a, b] = part.split('/'); return sum + (b ? Number(a) / Number(b) : Number(a));
+    }, 0);
+    const FRACTIONS = [[0, ''], [1 / 8, '1/8'], [1 / 4, '1/4'], [1 / 3, '1/3'], [1 / 2, '1/2'], [2 / 3, '2/3'], [3 / 4, '3/4'], [1, '']];
+    function fmtAmount(x) {
+      if (x >= 10) return String(Math.round(x));
+      if (x > 0 && x < 1 / 8) return '1/8';
+      let whole = Math.floor(x);
+      const [val, frac] = FRACTIONS.reduce((best, f) => Math.abs(f[0] - (x - whole)) < Math.abs(best[0] - (x - whole)) ? f : best);
+      if (val === 1) whole += 1;
+      return whole && frac ? `${whole} ${frac}` : whole ? String(whole) : frac || '0';
+    }
+    const fmtMult = f => `×${Math.round(f * 100) / 100}`;
+    // Count-style units that change between singular and plural ("1 cup" / "2 cups").
+    const UNIT_RE = /^(\s+(?:small |medium |large |thick |whole |thin )?)(cup|can|slice|clove|head|bunch|stalk|sprig|bag|block|brick|pack|sheet|loaf|jar|box|package|strip|bottle|piece|link|fillet)(es|s)?\b/i;
+    const PLURAL = { bunch: 'bunches', box: 'boxes', loaf: 'loaves' };
+    // "1 1/2 cups" ×2 → "3 cups"; "2 cans (15 oz)" ×0.5 → "1 can (15 oz)"; "small handful" ×2 → "small handful ×2".
+    function scaleQty(qty, f) {
+      if (!qty || Math.abs(f - 1) < 1e-9) return qty;
+      const N = '(\\d+\\s+\\d+/\\d+|\\d+/\\d+|\\d+(?:\\.\\d+)?)';
+      const m = qty.match(new RegExp(`^(about\\s+|~\\s*)?${N}(?:\\s*[-–]\\s*${N})?(.*)$`, 'i'));
+      if (!m) return f < 1 ? `${fmtAmount(f)} of ${qty}` : `${qty} ${fmtMult(f)}`;
+      const lo = parseAmount(m[2]) * f, hi = m[3] ? parseAmount(m[3]) * f : null;
+      const big = (hi ?? lo) > 1;
+      const rest = m[4].replace(UNIT_RE, (_, pre, unit) => {
+        const u = unit.toLowerCase();
+        return pre + (big ? (PLURAL[u] || `${unit}s`) : unit);
+      });
+      return `${m[1] || ''}${fmtAmount(lo)}${hi != null ? `–${fmtAmount(hi)}` : ''}${rest}`;
+    }
+    const scaleCubes = (n, f) => Math.max(1, Math.round(n * f));
+
+    // ---------- ingredient swaps ----------
+    const swapOptions = i => (i.food && state.swapIndex.get(i.food)) || [];
+    // Only keep swaps that still make sense for the recipe as it is now (indexes can shift after an import).
+    function cleanSwaps(r, swaps) {
+      const out = {};
+      Object.entries(swaps || {}).forEach(([idx, food]) => {
+        const i = r.ingredients[Number(idx)];
+        if (i && swapOptions(i).includes(food)) out[idx] = food;
+      });
+      return out;
+    }
+    const ingredientName = (i, swaps, idx) => swaps[idx] ? state.foods.get(swaps[idx])?.label || i.item : i.item;
+
+    // ---------- recipe configuration (protein + servings + swaps) ----------
+    const originalConfig = r => ({ protein: r.proteins[0] || null, servings: baseServings(r), swaps: {} });
+    function savedConfig(r) {
+      const m = state.mods[r.id];
+      if (!m) return null;
+      return {
+        protein: r.proteins.includes(m.protein) ? m.protein : r.proteins[0] || null,
+        servings: Math.max(1, Math.round(num(m.servings)) || baseServings(r)),
+        swaps: cleanSwaps(r, m.swaps)
+      };
+    }
+    const sameConfig = (a, b) => a.protein === b.protein && a.servings === b.servings &&
+      JSON.stringify(Object.entries(a.swaps).sort()) === JSON.stringify(Object.entries(b.swaps).sort());
+    const swapCount = cfg => Object.keys(cfg.swaps || {}).length;
+    // What the grid / sort uses: an active protein filter wins, then the user's saved version, then the default.
+    function effectiveConfig(r) {
+      const cfg = savedConfig(r) || originalConfig(r);
+      const fp = r.proteins.find(p => state.filters.proteins.includes(p));
+      return fp ? { ...cfg, protein: fp } : cfg;
+    }
+
+    // Round the same way the recipes.json generator does, so live numbers match the stored ones.
+    function roundNutrition(tot) {
+      const out = {};
+      NUTRIENTS.forEach(({ key }) => {
+        const x = tot[key];
+        if (x == null) return;
+        out[key] = key === 'calories' ? Math.round(x) : (key === 'cholesterol' || key === 'sodium') ? Math.round(x / 5) * 5
+          : x >= 10 ? Math.round(x) : Math.round(x * 2) / 2;
+      });
+      return out;
+    }
+    // Per-serving nutrition from ingredient weights + the foods table + freezer cubes. Null when the recipe lacks the data.
+    function computeNutrition(r, protein, swaps) {
+      const used = r.ingredients.map((i, idx) => [i, idx]).filter(([i]) => !i.optional && (!i.protein || i.protein === protein));
+      if (!used.length || used.some(([i]) => !i.food || i.grams == null || !state.foods.has(i.food))) return null;
+      const tot = Object.fromEntries(NUTRIENTS.map(n => [n.key, 0]));
+      const addN = (n, mult) => NUTRIENTS.forEach(({ key }) => { tot[key] += (n?.[key] || 0) * mult; });
+      used.forEach(([i, idx]) => addN(state.foods.get(swaps[idx] || i.food).per100g, i.grams / 100));
+      [['base', r.bases], ['booster', r.boosters]].forEach(([kind, list]) =>
+        list.forEach(b => addN(state.blocks.get(`${kind}:${b.id}`)?.nutrition, b.cubes)));
+      const per = Object.fromEntries(Object.entries(tot).map(([k, v]) => [k, v / baseServings(r)]));
+      return roundNutrition(per);
+    }
+    // Nutrition per serving for a configuration (defaults to effectiveConfig). Servings never change per-serving values.
+    function nutritionFor(r, cfg) {
+      const c = cfg || effectiveConfig(r);
+      if (swapCount(c)) { const n = computeNutrition(r, c.protein, c.swaps); if (n) return n; }
+      return (c.protein && r.nutritionByProtein[c.protein]) || r.nutrition;
     }
 
     const fmtN = (v, unit) => v == null ? '—' : `${Math.round(v * 10) / 10}${unit}`;
@@ -963,20 +1169,30 @@
       if (!n) return '';
       const hl = NUTRITION_SORTS[state.sort]?.[0];
       const cell = (key, label, unit, color) => n[key] == null ? '' : `
-        <div class="flex-1 rounded-lg px-2 py-1.5 border text-center ${hl === key ? 'border-amber-400/60 bg-amber-400/10' : 'border-slate-800 bg-slate-900/60'}">
+        <div class="flex-1 min-w-0 rounded-lg px-1 py-1.5 border text-center ${hl === key ? 'border-amber-400/60 bg-amber-400/10' : 'border-slate-800 bg-slate-900/60'}">
           <div class="text-sm font-bold ${color}">${fmtN(n[key], unit)}</div>
           <div class="text-[9px] uppercase tracking-wider text-slate-500">${label}</div>
         </div>`;
       return `<div class="flex gap-1.5 mb-4" title="Per serving (estimated)">
-        ${cell('calories', 'kcal', '', 'text-slate-100')}${cell('protein', 'protein', 'g', 'text-emerald-300')}${cell('fiber', 'fiber', 'g', 'text-lime-300')}
+        ${cell('calories', 'kcal', '', 'text-slate-100')}${cell('protein', 'protein', 'g', 'text-emerald-300')}${cell('carbohydrates', 'carbs', 'g', 'text-sky-300')}${cell('fiber', 'fiber', 'g', 'text-lime-300')}
       </div>`;
     }
 
     // Label-style "Nutrition Facts" panel for the recipe modal.
-    function nutritionPanel(r, protein) {
-      const n = nutritionFor(r, protein);
+    function nutritionPanel(r, cfg) {
+      const n = nutritionFor(r, cfg);
       if (!n) return '';
+      const protein = cfg.protein;
       const variant = protein && r.nutritionByProtein[protein] && Object.keys(r.nutritionByProtein).length > 1;
+      const swapped = swapCount(cfg) > 0 && computeNutrition(r, cfg.protein, cfg.swaps) != null;
+      const base = swapped ? nutritionFor(r, { ...cfg, swaps: {} }) : null;   // same recipe without swaps
+      const delta = (key, unit) => {
+        if (!base || base[key] == null || n[key] == null) return '';
+        const d = Math.round((n[key] - base[key]) * 10) / 10;
+        if (!d) return '';
+        const good = ['protein', 'fiber'].includes(key) ? d > 0 : d < 0;
+        return ` <span class="text-[10px] font-semibold ${good ? 'text-emerald-400' : 'text-rose-400'}">${d > 0 ? '+' : '−'}${Math.abs(d)}${unit}</span>`;
+      };
       // share of calories from each macro (4/4/9 kcal per gram)
       const kc = { protein: (n.protein || 0) * 4, carbohydrates: (n.carbohydrates || 0) * 4, totalFat: (n.totalFat || 0) * 9 };
       const kt = kc.protein + kc.carbohydrates + kc.totalFat;
@@ -986,7 +1202,7 @@
         const pct = d.dv ? Math.round(n[d.key] / d.dv * 100) : null;
         return `
           <div class="flex items-center justify-between gap-3 py-1.5 border-t border-slate-800 ${d.sub ? 'pl-4 text-slate-400' : 'text-slate-200'}">
-            <span class="text-xs">${d.sub ? '' : '<strong>'}${d.label}${d.sub ? '' : '</strong>'} <span class="${d.sub ? '' : 'text-slate-300'}">${fmtN(n[d.key], d.unit)}</span></span>
+            <span class="text-xs">${d.sub ? '' : '<strong>'}${d.label}${d.sub ? '' : '</strong>'} <span class="${d.sub ? '' : 'text-slate-300'}">${fmtN(n[d.key], d.unit)}</span>${delta(d.key, d.unit)}</span>
             <span class="flex items-center gap-2 shrink-0">
               ${pct != null ? `<span class="hidden sm:block w-16 h-1.5 rounded-full bg-slate-800 overflow-hidden"><span class="block h-full rounded-full ${pct >= 20 ? (['fiber', 'protein'].includes(d.key) ? 'bg-emerald-400' : 'bg-rose-400') : 'bg-slate-500'}" style="width:${Math.min(100, pct)}%"></span></span>
               <strong class="text-xs w-9 text-right">${pct}%</strong>` : '<span class="w-9"></span>'}
@@ -998,9 +1214,9 @@
           <div class="flex items-start justify-between gap-3">
             <div>
               <h4 class="text-xs font-bold text-lime-300 uppercase tracking-wider"><i class="fa-solid fa-heart-pulse mr-1.5"></i>Nutrition Facts</h4>
-              <p class="text-[11px] text-slate-500 mt-1">Per serving${r.servingSize ? ` (${esc(r.servingSize)})` : ''}${r.servings ? ` · ${esc(r.servings)} servings` : ''}${variant ? ` · with ${esc(labelFor('proteins', protein))}` : ''}</p>
+              <p class="text-[11px] text-slate-500 mt-1">Per serving${r.servingSize ? ` (${esc(r.servingSize)})` : ''}${variant ? ` · with ${esc(labelFor('proteins', protein))}` : ''}${swapped ? ` · <span class="text-sky-300">includes ${swapCount(cfg)} swap${swapCount(cfg) === 1 ? '' : 's'}</span>` : ''}</p>
             </div>
-            ${n.calories != null ? `<div class="text-right"><div class="font-display text-3xl font-extrabold text-white leading-none">${Math.round(n.calories)}</div><div class="text-[10px] uppercase tracking-wider text-slate-500 mt-1">calories</div></div>` : ''}
+            ${n.calories != null ? `<div class="text-right"><div class="font-display text-3xl font-extrabold text-white leading-none">${Math.round(n.calories)}</div><div class="text-[10px] uppercase tracking-wider text-slate-500 mt-1">calories${delta('calories', '')}</div></div>` : ''}
           </div>
           ${split.length ? `
           <div class="mt-3">
@@ -1009,7 +1225,7 @@
           </div>` : ''}
           <div class="mt-3 text-[10px] text-right text-slate-500 uppercase tracking-wider">% Daily Value</div>
           ${rows}
-          <p class="text-[10px] text-slate-500 mt-2 leading-snug">Estimated from the listed ingredients plus the freezer cubes. Excludes optional items and salt added to taste. %DV based on a 2,000-calorie diet.</p>
+          <p class="text-[10px] text-slate-500 mt-2 leading-snug">Estimated from the listed ingredients plus the freezer cubes${swapped ? ' (colored numbers show the change from your swaps)' : ''}. Per serving, so it stays the same when you scale the batch. Excludes optional items and salt added to taste. %DV based on a 2,000-calorie diet.</p>
         </div>`;
     }
 
@@ -1024,9 +1240,11 @@
         grid.innerHTML = '';
         empty.classList.remove('hidden');
         const noLibrary = state.recipes.length === 0;
-        $('emptyTitle').textContent = noLibrary ? 'No recipes loaded' : 'No matching recipes';
+        const noFavs = !noLibrary && state.favOnly && !state.favorites.some(id => state.byId.has(id));
+        $('emptyTitle').textContent = noLibrary ? 'No recipes loaded' : noFavs ? 'No favorites yet' : 'No matching recipes';
         $('emptyBody').textContent = noLibrary
           ? 'Import a recipes.json file to get started, or serve this folder over HTTP so the default recipes.json can load.'
+          : noFavs ? 'Tap the heart on any recipe to save it here. Turn off "Favorites" to see everything again.'
           : 'Nothing matches this combination. Remove a filter or broaden a group.';
         $('emptyResetBtn').innerHTML = noLibrary ? '<i class="fa-solid fa-file-import mr-1.5"></i> Import recipes' : '<i class="fa-solid fa-rotate-left mr-1.5"></i> Clear Filters';
         return;
@@ -1035,6 +1253,7 @@
 
       grid.innerHTML = list.map(r => {
         const planned = inPlan(r.id);
+        const saved = savedConfig(r);
         return `
         <article data-open="${esc(r.id)}" tabindex="0" class="glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group focus:outline-none focus:ring-2 focus:ring-amber-400/60">
           <div>
@@ -1043,6 +1262,7 @@
               ${tag(`${r.totalMinutes} min`, timeTagClass(r.totalMinutes), 'fa-clock')}
             </div>
             <h4 class="font-display font-bold text-base text-white group-hover:text-amber-300 transition-colors mb-1.5">${esc(r.title)}</h4>
+            ${saved ? `<p class="text-[10px] font-semibold text-sky-300 mb-1.5" title="Cards, sorting and the meal plan use your saved version"><i class="fa-solid fa-bookmark mr-1"></i>Your version · ${esc(configSummary(r, saved))}</p>` : ''}
             ${r.description ? `<p class="text-xs text-slate-400 line-clamp-2 mb-3">${esc(r.description)}</p>` : ''}
             <div class="flex flex-wrap gap-1.5 mb-3">${stackBadges(r, false)}</div>
             <div class="text-xs text-slate-400 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 space-y-1 mb-4">
@@ -1056,6 +1276,7 @@
             <span class="text-amber-400 font-semibold group-hover:text-amber-300">View recipe <i class="fa-solid fa-arrow-right ml-1 transform group-hover:translate-x-1 transition-transform"></i></span>
             <span class="flex items-center gap-2">
               ${r._source !== 'default' ? `<span class="text-[10px] text-slate-500" title="Imported from ${esc(r._source)}"><i class="fa-solid fa-file-import"></i></span>` : ''}
+              ${favButton(r.id, false)}
               <button data-plan="${esc(r.id)}" class="px-2.5 py-1 rounded-lg border font-semibold transition ${planned ? 'bg-emerald-500 border-emerald-400 text-slate-950' : 'border-slate-700 bg-slate-800 text-slate-300 hover:text-white'}">
                 ${planned ? '<i class="fa-solid fa-check mr-1"></i>In plan' : '<i class="fa-solid fa-plus mr-1"></i>Plan'}
               </button>
@@ -1089,6 +1310,8 @@
     }
 
     function renderAll() {
+      renderFavBtn();
+      saveSession();
       renderFilters();
       renderActiveBar();
       renderGrid();
@@ -1103,26 +1326,40 @@
       return r.proteins.find(p => state.filters.proteins.includes(p)) || r.proteins[0] || null;
     }
 
-    function openRecipe(id, protein) {
+    // Open a recipe. Starting point: the plan entry (when opened from the plan), else the user's saved version, else defaults.
+    function openRecipe(id, protein, fromPlan) {
       const r = state.byId.get(id);
       if (!r) return;
       const planned = state.plan.find(p => p.id === id);
-      state.modal = { id, protein: protein || planned?.protein || defaultProteinFor(r) };
+      const saved = savedConfig(r);
+      let cfg;
+      if (fromPlan && planned) cfg = planConfig(r, planned);
+      else if (saved) cfg = { ...saved };
+      else cfg = { ...originalConfig(r), protein: planned?.protein && r.proteins.includes(planned.protein) ? planned.protein : defaultProteinFor(r) };
+      if (protein && r.proteins.includes(protein)) cfg.protein = protein;
+      state.modal = { id, ...cfg, swaps: { ...cfg.swaps } };
       renderModal();
       openModal('recipeModal');
+      $('modalBody').scrollTop = 0;
       if (location.hash !== `#recipe=${id}`) history.replaceState(null, '', `#recipe=${encodeURIComponent(id)}`);
     }
+    const modalConfig = () => ({ protein: state.modal.protein, servings: state.modal.servings, swaps: state.modal.swaps });
 
     function renderModal() {
       const r = state.byId.get(state.modal.id);
       if (!r) return;
-      const p = state.modal.protein;
+      const cfg = modalConfig();
+      const p = cfg.protein;
+      const base = baseServings(r);
+      const f = cfg.servings / base;
       const visible = x => !x.protein || x.protein === p;
+      const n = nutritionFor(r, cfg);
 
       $('modalHeader').innerHTML = `
         <div class="flex flex-wrap items-center gap-1.5 mb-2">
           ${r.meals.map(m => tag(labelFor('meals', m), ACCENTS.rose.tag)).join('')}
           ${r.cultures.map(c => tag(labelFor('cultures', c), ACCENTS.indigo.tag)).join('')}
+          ${isFav(r.id) ? tag('Favorite', 'bg-rose-500/15 text-rose-300 border-rose-500/30', 'fa-heart') : ''}
         </div>
         <h2 class="font-display font-extrabold text-2xl text-white tracking-tight">${esc(r.title)}</h2>
         ${r.description ? `<p class="text-sm text-slate-400 mt-1.5">${esc(r.description)}</p>` : ''}
@@ -1130,8 +1367,8 @@
           <span><i class="fa-regular fa-clock text-indigo-400 mr-1"></i>Prep <strong class="text-slate-200">${r.prepMinutes}m</strong></span>
           <span><i class="fa-solid fa-fire text-amber-400 mr-1"></i>Cook <strong class="text-slate-200">${r.cookMinutes}m</strong></span>
           <span><i class="fa-solid fa-stopwatch text-rose-400 mr-1"></i>Total <strong class="text-slate-200">${r.totalMinutes}m</strong></span>
-          ${r.servings ? `<span><i class="fa-solid fa-utensils text-emerald-400 mr-1"></i>Serves <strong class="text-slate-200">${esc(r.servings)}</strong></span>` : ''}
-          ${nutritionFor(r, p)?.calories != null ? `<span><i class="fa-solid fa-heart-pulse text-lime-300 mr-1"></i><strong class="text-slate-200">${Math.round(nutritionFor(r, p).calories)}</strong> kcal · <strong class="text-slate-200">${fmtN(nutritionFor(r, p).protein, 'g')}</strong> protein / serving</span>` : ''}
+          <span><i class="fa-solid fa-utensils text-emerald-400 mr-1"></i>Serves <strong class="text-slate-200">${cfg.servings}</strong>${f !== 1 ? ` <span class="text-slate-500">(orig. ${base})</span>` : ''}</span>
+          ${n?.calories != null ? `<span><i class="fa-solid fa-heart-pulse text-lime-300 mr-1"></i><strong class="text-slate-200">${Math.round(n.calories)}</strong> kcal · <strong class="text-slate-200">${fmtN(n.protein, 'g')}</strong> protein / serving</span>` : ''}
         </div>`;
 
       const proteinPicker = r.proteins.length ? `
@@ -1144,62 +1381,140 @@
           </div>
         </div>` : '';
 
-      const ingredients = r.ingredients.filter(visible);
+      const presets = [['Half', 0.5], ['Original', 1], ['Double', 2], ['Triple', 3]]
+        .map(([l, m]) => ({ l, m, n: Math.max(1, Math.round(base * m)) }))
+        .filter((x, i, a) => a.findIndex(y => y.n === x.n) === i);
+      const servingsPicker = `
+        <div>
+          <h4 class="text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2.5"><i class="fa-solid fa-people-group mr-1.5"></i>Serving</h4>
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="inline-flex items-center rounded-xl border border-slate-700 bg-slate-900 overflow-hidden">
+              <button data-servings="${cfg.servings - 1}" ${cfg.servings <= 1 ? 'disabled' : ''} aria-label="Fewer servings" class="w-9 h-9 text-slate-300 hover:text-white hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent"><i class="fa-solid fa-minus"></i></button>
+              <span class="px-3 text-sm text-slate-200 min-w-[7.5rem] text-center"><strong class="text-white text-base">${cfg.servings}</strong> serving${cfg.servings === 1 ? '' : 's'}</span>
+              <button data-servings="${cfg.servings + 1}" ${cfg.servings >= 99 ? 'disabled' : ''} aria-label="More servings" class="w-9 h-9 text-slate-300 hover:text-white hover:bg-slate-800 disabled:opacity-30"><i class="fa-solid fa-plus"></i></button>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              ${presets.map(x => `<button data-servings="${x.n}" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${x.n === cfg.servings ? 'bg-cyan-400 border-cyan-300 text-slate-950' : CHIP_OFF}">${x.l} <span class="opacity-60">${x.n}</span></button>`).join('')}
+            </div>
+          </div>
+          ${f !== 1 ? `<p class="text-[11px] text-slate-400 mt-2"><i class="fa-solid fa-scale-balanced text-cyan-300 mr-1"></i>Ingredients and cubes are scaled ${fmtMult(f)} from the original ${base}. The method is written for the original batch, so use the scaled amounts above it and allow a little extra cooking time for big batches.</p>` : ''}
+        </div>`;
+
+      const ingredients = r.ingredients.map((i, idx) => ({ i, idx })).filter(({ i }) => visible(i));
       const steps = r.steps.filter(visible);
+      const scaled = { bases: r.bases.map(b => ({ ...b, cubes: scaleCubes(b.cubes, f) })), boosters: r.boosters.map(b => ({ ...b, cubes: scaleCubes(b.cubes, f) })) };
+      const nSwappable = ingredients.filter(({ i }) => swapOptions(i).length).length;
 
       $('modalBody').innerHTML = `
         ${r.bases.length || r.boosters.length ? `
         <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-          <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2.5">Freezer Block Stack</h4>
-          <div class="flex flex-wrap gap-2">${stackBadges(r, true)}</div>
+          <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2.5">Freezer Block Stack${f !== 1 ? ` <span class="text-slate-500 normal-case font-semibold tracking-normal">· for ${cfg.servings} servings</span>` : ''}</h4>
+          <div class="flex flex-wrap gap-2">${stackBadges(scaled, true)}</div>
         </div>` : ''}
         ${proteinPicker}
-        ${nutritionPanel(r, p)}
+        ${servingsPicker}
         <div>
-          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3"><i class="fa-solid fa-basket-shopping text-emerald-400 mr-1.5"></i>Ingredients</h4>
+          <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider"><i class="fa-solid fa-basket-shopping text-emerald-400 mr-1.5"></i>Ingredients</h4>
+            ${nSwappable ? `<span class="text-[11px] text-slate-500"><i class="fa-solid fa-right-left text-sky-300 mr-1"></i>${swapCount(cfg) ? `${swapCount(cfg)} swapped · <button data-swap-reset class="text-sky-300 hover:text-sky-200">undo swaps</button>` : `${nSwappable} can be swapped`}</span>` : ''}
+          </div>
           <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-slate-300">
-            ${ingredients.map(i => `
-              <li class="flex items-start gap-2 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
-                <i class="fa-solid fa-check text-emerald-400 mt-1 text-xs"></i>
-                <span>${i.qty ? `<strong class="text-slate-100">${esc(i.qty)}</strong> ` : ''}${esc(i.item)}${i.note ? `<span class="text-slate-500">, ${esc(i.note)}</span>` : ''}${i.optional ? ' <span class="text-[10px] text-slate-500 uppercase">optional</span>' : ''}</span>
-              </li>`).join('') || '<li class="text-slate-500 text-xs">No ingredients listed.</li>'}
+            ${ingredients.map(({ i, idx }) => {
+              const opts = swapOptions(i), sw = cfg.swaps[idx];
+              return `
+              <li class="flex items-start gap-2 bg-slate-900/60 p-2.5 rounded-lg border ${sw ? 'border-sky-500/40' : 'border-slate-800'}">
+                <i class="fa-solid ${sw ? 'fa-right-left text-sky-300' : 'fa-check text-emerald-400'} mt-1 text-xs"></i>
+                <div class="min-w-0 flex-1">
+                  <span>${i.qty ? `<strong class="text-slate-100">${esc(scaleQty(i.qty, f))}</strong> ` : ''}${esc(ingredientName(i, cfg.swaps, idx))}${!sw && i.note ? `<span class="text-slate-500">, ${esc(i.note)}</span>` : ''}${i.optional ? ' <span class="text-[10px] text-slate-500 uppercase">optional</span>' : ''}</span>
+                  ${sw ? `<span class="block text-[10px] text-slate-500">instead of ${esc(i.item)}</span>` : ''}
+                  ${opts.length ? `
+                  <label class="mt-1.5 flex items-center gap-1.5 text-[11px] text-slate-500">
+                    <span class="sr-only">Swap ${esc(i.item)}</span>
+                    <select data-swap="${idx}" class="max-w-full bg-slate-950 border border-slate-700 rounded-md px-1.5 py-0.5 text-[11px] text-slate-300 focus:outline-none focus:border-sky-400">
+                      <option value="">${sw ? 'Original' : 'Swap'}: ${esc(i.item)}</option>
+                      ${opts.map(k => `<option value="${esc(k)}" ${k === sw ? 'selected' : ''}>${esc(state.foods.get(k).label)}</option>`).join('')}
+                    </select>
+                  </label>` : ''}
+                </div>
+              </li>`;
+            }).join('') || '<li class="text-slate-500 text-xs">No ingredients listed.</li>'}
           </ul>
         </div>
         <div>
           <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3"><i class="fa-solid fa-list-check text-amber-400 mr-1.5"></i>Method</h4>
           <div class="space-y-3">
-            ${steps.map((s, idx) => `
+            ${steps.map((st, idx) => `
               <div class="flex items-start gap-3 bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
                 <div class="w-6 h-6 rounded-full bg-amber-500 text-slate-950 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</div>
-                <div class="text-sm text-slate-200 leading-relaxed">${s.title ? `<strong class="block text-slate-100 mb-0.5">${esc(s.title)}</strong>` : ''}${esc(s.text)}</div>
+                <div class="text-sm text-slate-200 leading-relaxed">${st.title ? `<strong class="block text-slate-100 mb-0.5">${esc(st.title)}</strong>` : ''}${esc(st.text)}</div>
               </div>`).join('') || '<p class="text-slate-500 text-xs">No steps listed.</p>'}
           </div>
         </div>
+        ${nutritionPanel(r, cfg)}
         ${r.notes.length ? `
         <div class="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
           <h4 class="text-xs font-bold text-amber-300 uppercase tracking-wider mb-2"><i class="fa-solid fa-lightbulb mr-1.5"></i>Notes & Swaps</h4>
-          <ul class="list-disc pl-5 space-y-1 text-sm text-slate-300">${r.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>
+          <ul class="list-disc pl-5 space-y-1 text-sm text-slate-300">${r.notes.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
         </div>` : ''}
         ${r.tags.length ? `<div class="flex flex-wrap gap-1.5">${r.tags.map(t => `<span class="text-[11px] text-slate-400 bg-slate-800/80 border border-slate-700 rounded-md px-2 py-0.5">#${esc(t)}</span>`).join('')}</div>` : ''}
         ${r._source !== 'default' ? `<p class="text-[11px] text-slate-500"><i class="fa-solid fa-file-import mr-1"></i>Imported from ${esc(r._source)}${r._overrides ? ' (replaces the default version)' : ''}</p>` : ''}`;
 
+      renderModalFooter(r, cfg);
+    }
+
+    function renderModalFooter(r, cfg) {
+      const saved = savedConfig(r);
+      const orig = originalConfig(r);
+      const dirty = !sameConfig(cfg, saved || orig);
       const planned = state.plan.find(x => x.id === r.id);
-      const btn = $('modalPlanBtn');
-      if (planned && planned.protein === p) {
-        btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition bg-emerald-500 hover:bg-rose-500 text-slate-950 hover:text-white';
-        btn.innerHTML = '<i class="fa-solid fa-check mr-1.5"></i>In meal plan — remove';
-      } else {
-        btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300';
-        btn.innerHTML = planned
-          ? `<i class="fa-solid fa-arrows-rotate mr-1.5"></i>Switch plan to ${esc(labelFor('proteins', p))}`
-          : `<i class="fa-solid fa-cart-plus mr-1.5"></i>Add to meal plan${p && r.proteins.length > 1 ? ` (${esc(labelFor('proteins', p))})` : ''}`;
+      const inPlanAsIs = planned && sameConfig(planConfig(r, planned), cfg);
+      const planLabel = configSummary(r, cfg);
+      $('modalFooter').innerHTML = `
+        <div class="flex flex-wrap gap-2">
+          ${favButton(r.id, true)}
+          <button data-mod-save ${dirty ? '' : 'disabled'} class="px-3 py-2 rounded-xl text-xs font-bold border transition ${dirty ? 'bg-sky-500/15 hover:bg-sky-500/25 border-sky-500/50 text-sky-200' : saved ? 'border-sky-500/30 text-sky-300/80 cursor-default' : 'border-slate-800 text-slate-600 cursor-default'}"
+            title="${saved ? 'Your saved version is used for cards, sorting and new meal-plan entries' : 'Save servings, protein and swaps as your version of this recipe'}">
+            <i class="fa-solid ${dirty ? 'fa-floppy-disk' : saved ? 'fa-bookmark' : 'fa-floppy-disk'} mr-1.5"></i>${dirty ? (saved ? 'Save changes' : 'Save my version') : saved ? 'Saved version' : 'No changes'}</button>
+          ${saved || dirty ? `<button data-mod-reset class="px-3 py-2 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:text-white transition" title="${saved ? 'Delete your saved version and go back to the original recipe' : 'Discard changes'}"><i class="fa-solid fa-rotate-left mr-1.5"></i>${saved ? 'Reset to original' : 'Discard'}</button>` : ''}
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button data-modal-plan class="px-4 py-2 rounded-xl text-xs font-bold transition ${inPlanAsIs ? 'bg-emerald-500 hover:bg-rose-500 text-slate-950 hover:text-white' : 'bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300'}">
+            ${inPlanAsIs ? '<i class="fa-solid fa-check mr-1.5"></i>In meal plan — remove'
+              : planned ? `<i class="fa-solid fa-arrows-rotate mr-1.5"></i>Update meal plan${planLabel !== 'original' ? ` (${esc(planLabel)})` : ''}`
+              : `<i class="fa-solid fa-cart-plus mr-1.5"></i>Add to meal plan${planLabel !== 'original' ? ` (${esc(planLabel)})` : ''}`}
+          </button>
+          <button data-close="recipeModal" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition">Close</button>
+        </div>`;
+    }
+
+    function rerenderModalKeepScroll() { const y = $('modalBody').scrollTop; renderModal(); $('modalBody').scrollTop = y; }
+
+    function saveMods() {
+      const r = state.byId.get(state.modal.id);
+      if (!r) return;
+      const cfg = modalConfig();
+      if (sameConfig(cfg, originalConfig(r))) { delete state.mods[r.id]; toast(`“${r.title}” is back to the original`); }
+      else {
+        state.mods[r.id] = { protein: cfg.protein, servings: cfg.servings, swaps: { ...cfg.swaps }, savedAt: new Date().toISOString() };
+        toast(`Saved your version of “${r.title}” (${configSummary(r, cfg)})`);
       }
+      saveSession(); renderModal(); renderGrid();
+    }
+    function resetMods() {
+      const r = state.byId.get(state.modal.id);
+      if (!r) return;
+      const had = !!state.mods[r.id];
+      delete state.mods[r.id];
+      const o = originalConfig(r);
+      state.modal = { id: r.id, ...o, protein: defaultProteinFor(r), swaps: {} };
+      if (had) toast(`Removed your saved version of “${r.title}”`);
+      saveSession(); renderModal(); renderGrid();
     }
 
     // =========================================================================
     // MEAL PLAN & SHOPPING
     // =========================================================================
-    function savePlan() { store.set(LS.plan, state.plan); store.set(LS.planBlocks, state.planBlocks); renderPlanBadge(); }
+    function savePlan() { saveSession(); renderPlanBadge(); }
 
     const blockLabel = b => `${b.kind === 'base' ? 'Base' : 'Booster'} ${b.id}: ${b.name}`;
     function togglePlanBlock(key) {
@@ -1222,20 +1537,43 @@
         ${on ? `<i class="fa-solid fa-check mr-1"></i>${big ? 'On shopping list' : 'Listed'}` : `<i class="fa-solid fa-plus mr-1"></i>${big ? 'Add batch to shopping list' : 'Shop'}`}</button>`;
     };
 
-    function togglePlan(id, protein) {
+    // A plan entry stores the configuration it was added with: { id, protein, servings, swaps }.
+    function planConfig(r, e) {
+      return {
+        protein: r.proteins.includes(e.protein) ? e.protein : r.proteins[0] || null,
+        servings: Math.max(1, Math.round(num(e.servings)) || baseServings(r)),
+        swaps: cleanSwaps(r, e.swaps)
+      };
+    }
+    // Card "+ Plan" button: add with the saved version (or defaults), or remove if already planned.
+    function togglePlan(id) {
       const r = state.byId.get(id);
       if (!r) return;
-      const existing = state.plan.find(p => p.id === id);
-      const prot = protein ?? defaultProteinFor(r);
-      if (existing && (protein == null || existing.protein === prot)) {
+      if (state.plan.some(p => p.id === id)) {
         state.plan = state.plan.filter(p => p.id !== id);
         toast(`Removed “${r.title}” from meal plan`);
-      } else if (existing) {
-        existing.protein = prot;
-        toast(`Meal plan now uses ${labelFor('proteins', prot)} for “${r.title}”`);
       } else {
-        state.plan.push({ id, protein: prot });
-        toast(`Added “${r.title}” to meal plan`);
+        const cfg = effectiveConfig(r);
+        state.plan.push({ id, ...cfg, swaps: { ...cfg.swaps } });
+        toast(`Added “${r.title}” to meal plan${configSummary(r, cfg) !== 'original' ? ` (${configSummary(r, cfg)})` : ''}`);
+      }
+      savePlan();
+    }
+    // Recipe view button: add / update to what's on screen, or remove when it already matches.
+    function planFromModal() {
+      const r = state.byId.get(state.modal.id);
+      if (!r) return;
+      const cfg = modalConfig();
+      const existing = state.plan.find(p => p.id === r.id);
+      if (existing && sameConfig(planConfig(r, existing), cfg)) {
+        state.plan = state.plan.filter(p => p.id !== r.id);
+        toast(`Removed “${r.title}” from meal plan`);
+      } else if (existing) {
+        Object.assign(existing, cfg, { swaps: { ...cfg.swaps } });
+        toast(`Updated “${r.title}” in meal plan (${configSummary(r, cfg)})`);
+      } else {
+        state.plan.push({ id: r.id, ...cfg, swaps: { ...cfg.swaps } });
+        toast(`Added “${r.title}” to meal plan${configSummary(r, cfg) !== 'original' ? ` (${configSummary(r, cfg)})` : ''}`);
       }
       savePlan();
     }
@@ -1247,13 +1585,16 @@
       state.plan.forEach(entry => {
         const r = state.byId.get(entry.id);
         if (!r) { missing.push(entry.id); return; }
-        r.bases.forEach(b => cubes.bases[b.id] = (cubes.bases[b.id] || 0) + b.cubes);
-        r.boosters.forEach(b => cubes.boosters[b.id] = (cubes.boosters[b.id] || 0) + b.cubes);
-        r.ingredients.filter(i => !i.protein || i.protein === entry.protein).forEach(i => {
-          const key = `${i.aisle}|${i.item.toLowerCase()}`;
-          if (!map.has(key)) map.set(key, { key: `plan|${key}`, item: i.item, aisle: i.aisle, qtys: [], recipes: new Set(), optional: true });
+        const cfg = planConfig(r, entry), f = cfg.servings / baseServings(r);
+        r.bases.forEach(b => cubes.bases[b.id] = (cubes.bases[b.id] || 0) + scaleCubes(b.cubes, f));
+        r.boosters.forEach(b => cubes.boosters[b.id] = (cubes.boosters[b.id] || 0) + scaleCubes(b.cubes, f));
+        r.ingredients.forEach((i, idx) => {
+          if (i.protein && i.protein !== cfg.protein) return;
+          const item = ingredientName(i, cfg.swaps, idx);
+          const key = `${i.aisle}|${item.toLowerCase()}`;
+          if (!map.has(key)) map.set(key, { key: `plan|${key}`, item, aisle: i.aisle, qtys: [], recipes: new Set(), optional: true });
           const g = map.get(key);
-          if (i.qty) g.qtys.push(i.qty);
+          if (i.qty) g.qtys.push(scaleQty(i.qty, f));
           g.recipes.add(r.title);
           g.optional = g.optional && i.optional;
         });
@@ -1551,7 +1892,7 @@
             ${state.plan.map(e => {
               const r = state.byId.get(e.id);
               return `<li class="flex items-center justify-between gap-2">
-                ${r ? `<button data-open="${esc(e.id)}" data-open-protein="${esc(e.protein || '')}" class="text-left text-slate-200 hover:text-amber-300">${esc(r.title)}${e.protein && r.proteins.length > 1 ? ` <span class="text-xs text-slate-500">· ${esc(labelFor('proteins', e.protein))}</span>` : ''}</button>`
+                ${r ? `<button data-open="${esc(e.id)}" data-open-plan="1" class="text-left text-slate-200 hover:text-amber-300">${esc(r.title)}${configSummary(r, planConfig(r, e)) !== 'original' ? ` <span class="text-xs text-slate-500">· ${esc(configSummary(r, planConfig(r, e)))}</span>` : ''}</button>`
                      : `<span class="text-slate-500">${esc(e.id)} <span class="text-xs">(recipe not in library)</span></span>`}
                 <button data-unplan="${esc(e.id)}" class="text-slate-500 hover:text-rose-300 text-xs" aria-label="Remove"><i class="fa-solid fa-xmark"></i></button>
               </li>`;
@@ -1596,7 +1937,7 @@
         if (!planSize()) return '';
         const { aisleOrder, byAisle, cubes } = planGroceries();
         if (state.plan.length) lines.push('MEAL PLAN');
-        state.plan.forEach(e => { const r = state.byId.get(e.id); if (r) lines.push(`- ${r.title}${e.protein && r.proteins.length > 1 ? ` (${labelFor('proteins', e.protein)})` : ''}`); });
+        state.plan.forEach(e => { const r = state.byId.get(e.id); if (r) { const sum = configSummary(r, planConfig(r, e)); lines.push(`- ${r.title}${sum !== 'original' ? ` (${sum})` : ''}`); } });
         const pb = state.planBlocks.map(k => state.blocks.get(k)).filter(b => b && !b.missing);
         if (pb.length) { if (state.plan.length) lines.push(''); lines.push('FREEZER BLOCK BATCHES', ...pb.map(b => `- ${blockLabel(b)}`)); }
         const c = [...Object.entries(cubes.bases).map(([id, n]) => `${n}x Base ${id} ${blockDef('bases', id).name}`), ...Object.entries(cubes.boosters).map(([id, n]) => `${n}x Booster ${id} ${blockDef('boosters', id).name}`)];
@@ -1632,7 +1973,15 @@
         try { data = JSON.parse(await f.text()); } catch { problems.push(`${f.name}: not valid JSON`); continue; }
         const list = extractRecipeList(data);
         const blockList = Array.isArray(data?.blocks) ? data.blocks : null;
-        if (!list && !blockList) { problems.push(`${f.name}: expected a "recipes" or "blocks" array`); continue; }
+        const foodsIn = isObj(data?.foods) ? data.foods : null;
+        const swapsIn = Array.isArray(data?.swaps) ? data.swaps : null;
+        if (!list && !blockList && !foodsIn && !swapsIn) { problems.push(`${f.name}: expected a "recipes", "blocks", "foods" or "swaps" section`); continue; }
+        if (foodsIn) Object.entries(foodsIn).forEach(([k, v]) => { if (normNutrition(v?.per100g)) state.importedFoods[k] = v; else problems.push(`${f.name} food "${k}": missing per100g`); });
+        if (swapsIn) swapsIn.forEach(g => {
+          if (!isObj(g) || !Array.isArray(g.foods)) return problems.push(`${f.name}: swap group needs a "foods" array`);
+          const name = String(g.name ?? g.foods.join('/'));
+          state.importedSwaps = state.importedSwaps.filter(x => String(x.name ?? x.foods.join('/')) !== name).concat([{ name, foods: g.foods }]);
+        });
         (blockList || []).forEach((raw, i) => {
           const n = normalizeBlock(raw, f.name);
           if (n.error) { problems.push(`${f.name} block #${i + 1}: ${n.error}`); return; }
@@ -1647,8 +1996,7 @@
           state.imported[n.recipe.id] = { raw, source: f.name };
         });
       }
-      store.set(LS.imported, state.imported);
-      store.set(LS.importedBlocks, state.importedBlocks);
+      saveSession();
       rebuildLibrary();
       renderAll();
       if (!$('blocksModal').classList.contains('closed')) renderBlocks();
@@ -1665,7 +2013,9 @@
       const blockRaw = new Map(state.blockDefaults.map(raw => { const n = normalizeBlock(raw, 'default'); return [n.block?.key, raw]; }));
       Object.entries(state.importedBlocks).forEach(([k, v]) => blockRaw.set(k, v.raw));
       blockRaw.delete(undefined);
-      const blob = new Blob([JSON.stringify({ schemaVersion: 1, blocks: [...blockRaw.values()], recipes }, null, 2)], { type: 'application/json' });
+      const foods = { ...state.foodDefaults, ...state.importedFoods };
+      const swapMap = new Map([...state.swapDefaults, ...state.importedSwaps].map(g => [String(g.name ?? g.foods.join('/')), g]));
+      const blob = new Blob([JSON.stringify({ schemaVersion: 1, blocks: [...blockRaw.values()], foods, swaps: [...swapMap.values()], recipes }, null, 2)], { type: 'application/json' });
       const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'recipes.json' });
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 1000);
@@ -1715,7 +2065,7 @@
     }
 
     function openIntro() { intro.step = 0; renderIntro(); openModal('introModal'); $('introNext').focus(); }
-    function finishIntro() { store.set(LS.introSeen, true); closeModal('introModal'); }
+    function finishIntro() { state.introSeen = true; saveSession(); closeModal('introModal'); }
     function introGo(step) { intro.step = Math.max(0, Math.min(intro.total - 1, step)); renderIntro(); }
 
     // =========================================================================
@@ -1729,6 +2079,7 @@
 
     function resetFilters() {
       state.filters = emptyFilters();
+      state.favOnly = false;
       state.search = '';
       $('searchInput').value = '';
       $('clearSearch').classList.add('hidden');
@@ -1737,7 +2088,7 @@
 
     function attachEvents() {
       document.addEventListener('click', e => {
-        const t = e.target.closest('[data-axis],[data-clear-axis],[data-remove-axis],[data-remove-search],[data-plan],[data-open],[data-variant],[data-close],[data-shop-tab],[data-unplan],[data-clear-plan],[data-block],[data-block-filter],[data-prep-toggle],[data-prep-all],[data-prep-shop],[data-plan-block],[data-unplan-block]');
+        const t = e.target.closest('[data-axis],[data-clear-axis],[data-remove-axis],[data-remove-search],[data-plan],[data-open],[data-variant],[data-close],[data-shop-tab],[data-unplan],[data-clear-plan],[data-block],[data-block-filter],[data-prep-toggle],[data-prep-all],[data-prep-shop],[data-plan-block],[data-unplan-block],[data-fav],[data-servings],[data-swap-reset],[data-mod-save],[data-mod-reset],[data-modal-plan]');
         if (!t) return;
         const d = t.dataset;
         if (d.axis) return toggleFilter(d.axis, d.value);
@@ -1749,7 +2100,17 @@
         if ('clearPlan' in d) { state.plan = []; state.planBlocks = []; savePlan(); renderShopping(); return renderGrid(); }
         if (d.planBlock) { e.stopPropagation(); togglePlanBlock(d.planBlock); if (!$('blocksModal').classList.contains('closed')) renderBlocks(); return; }
         if (d.unplanBlock) { state.planBlocks = state.planBlocks.filter(k => k !== d.unplanBlock); savePlan(); return renderShopping(); }
-        if (d.variant) { state.modal.protein = d.variant; return renderModal(); }
+        if (d.variant) { state.modal.protein = d.variant; return rerenderModalKeepScroll(); }
+        if (d.servings) { state.modal.servings = Math.max(1, Math.min(99, Number(d.servings) || 1)); return rerenderModalKeepScroll(); }
+        if ('swapReset' in d) { state.modal.swaps = {}; return rerenderModalKeepScroll(); }
+        if ('modSave' in d) return saveMods();
+        if ('modReset' in d) return resetMods();
+        if ('modalPlan' in d) { planFromModal(); renderModalFooter(state.byId.get(state.modal.id), modalConfig()); return renderGrid(); }
+        if (d.fav) {
+          e.stopPropagation(); toggleFav(d.fav); renderGrid(); renderFavBtn();
+          if (state.modal.id === d.fav && !$('recipeModal').classList.contains('closed')) rerenderModalKeepScroll();
+          return;
+        }
         if (d.close) return closeModal(d.close);
         if (d.block) {
           if ($('blocksModal').classList.contains('closed')) return openBlocks(d.block);
@@ -1776,8 +2137,8 @@
           state.prepSel = d.prepShop ? new Set([d.prepShop]) : null;
           state.shopTab = 'freezer'; closeModal('blocksModal'); renderShopping(); return openModal('shoppingModal');
         }
-        if (d.shopTab) { state.shopTab = d.shopTab; return renderShopping(); }
-        if (d.open) { if (t.closest('#shoppingModal')) closeModal('shoppingModal'); return openRecipe(d.open, d.openProtein || null); }
+        if (d.shopTab) { state.shopTab = d.shopTab; saveSession(); return renderShopping(); }
+        if (d.open) { if (t.closest('#shoppingModal')) closeModal('shoppingModal'); return openRecipe(d.open, null, !!d.openPlan); }
       });
 
       $('recipeGrid').addEventListener('keydown', e => {
@@ -1790,9 +2151,13 @@
         if (card && (e.key === 'Enter' || e.key === ' ') && e.target === card) { e.preventDefault(); card.click(); }
       });
 
-      $('modalPlanBtn').addEventListener('click', () => {
-        togglePlan(state.modal.id, state.modal.protein);
-        renderModal(); renderGrid();
+      // Recipe view: swap pickers
+      $('modalBody').addEventListener('change', e => {
+        const sel = e.target.closest('select[data-swap]');
+        if (!sel) return;
+        if (sel.value) state.modal.swaps[sel.dataset.swap] = sel.value; else delete state.modal.swaps[sel.dataset.swap];
+        const y = $('modalBody').scrollTop;
+        renderModal(); $('modalBody').scrollTop = y;
       });
 
       $('searchInput').addEventListener('input', e => {
@@ -1806,7 +2171,8 @@
         renderAll();
       });
 
-      $('sortSelect').addEventListener('change', e => { state.sort = e.target.value; renderGrid(); });
+      $('sortSelect').addEventListener('change', e => { state.sort = e.target.value; saveSession(); renderGrid(); });
+      $('favOnlyBtn').addEventListener('click', () => { state.favOnly = !state.favOnly; renderAll(); });
       $('resetAllBtn').addEventListener('click', resetFilters);
       $('clearFiltersBtn').addEventListener('click', resetFilters);
       $('clearActiveBtn').addEventListener('click', resetFilters);
@@ -1819,7 +2185,8 @@
       $('clearImportedBtn').addEventListener('click', () => {
         const n = Object.keys(state.imported).length, nb = Object.keys(state.importedBlocks).length;
         state.imported = {}; state.importedBlocks = {};
-        store.set(LS.imported, {}); store.set(LS.importedBlocks, {});
+        state.importedFoods = {}; state.importedSwaps = [];
+        saveSession();
         rebuildLibrary(); renderAll();
         toast(`Removed ${n} imported recipe${n === 1 ? '' : 's'}${nb ? ` and ${nb} block${nb === 1 ? '' : 's'}` : ''}.`);
       });
@@ -1833,13 +2200,13 @@
         const k = e.target.dataset.check;
         if (!k) return;
         if (e.target.checked) state.checked[k] = true; else delete state.checked[k];
-        store.set(LS.checked, state.checked);
+        saveSession();
         renderShopping();
       });
       $('uncheckAllBtn').addEventListener('click', () => {
         const prefix = state.shopTab + '|';
         Object.keys(state.checked).forEach(k => { if (k.startsWith(prefix)) delete state.checked[k]; });
-        store.set(LS.checked, state.checked);
+        saveSession();
         renderShopping();
       });
       $('copyListBtn').addEventListener('click', async () => {
@@ -1901,6 +2268,8 @@
         if (!list) throw new Error('recipes.json must contain a "recipes" array');
         state.defaults = list;
         state.blockDefaults = Array.isArray(data.blocks) ? data.blocks : [];
+        state.foodDefaults = isObj(data.foods) ? data.foods : {};
+        state.swapDefaults = Array.isArray(data.swaps) ? data.swaps : [];
       } catch (err) {
         state.loadError = err.message || String(err);
         console.error(err);
@@ -1909,6 +2278,7 @@
 
     (async function init() {
       attachEvents();
+      if ([...$('sortSelect').options].some(o => o.value === state.sort)) $('sortSelect').value = state.sort; else state.sort = 'default';
       renderAll();
       await loadDefaults();
       state.loading = false;
@@ -1916,7 +2286,7 @@
       renderAll();
       const m = location.hash.match(/^#recipe=(.+)$/);
       if (m) openRecipe(decodeURIComponent(m[1]));
-      else if (location.hash === '#intro' || !store.get(LS.introSeen, false)) openIntro();
+      else if (location.hash === '#intro' || !state.introSeen) openIntro();
     })();
   </script>
 </body>

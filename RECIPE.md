@@ -61,6 +61,8 @@ This page covers the file format, every recipe property, and how filtering and i
 | `schemaVersion` | number | recommended | Format version. Currently `1`. |
 | `recipes` | array | ✅ (or `blocks`) | The list of recipe objects. |
 | `blocks` | array | | Prep recipes for the freezer blocks themselves (see [Freezer block recipes](#-freezer-block-recipes-blocks)). |
+| `foods` | object | | Per-100 g nutrition for ingredients, referenced by an ingredient's `food` key (see [Foods & swaps](#-foods--swaps-foods-swaps)). |
+| `swaps` | array | | Groups of interchangeable foods that power ingredient swaps. |
 
 A bare JSON array of recipes (`[ {...}, {...} ]`) also works when importing. A file can also contain only `blocks`.
 
@@ -256,6 +258,12 @@ An array of ingredient objects. A plain string also works, but it lands in the "
 | `note` | string | Prep note shown after the item: `"finely diced"`. |
 | `optional` | boolean | Marks the item as optional in the recipe and the shopping list. |
 | `protein` | string | **Protein variant.** Only shown when this protein is selected (see below). |
+| `food` | string | Key into the top-level [`foods`](#-foods--swaps-foods-swaps) table. Powers live nutrition and **ingredient swaps**. |
+| `grams` | number | Weight of this ingredient (as listed, for the original servings). Used with `food` to compute nutrition. |
+
+When every counted ingredient has `food` + `grams`, the page recalculates nutrition live, so swaps update the Nutrition Facts. Without them the recipe still works; it just uses the stored `nutrition` and offers no swaps.
+
+**Serving sizes.** The recipe view has a servings stepper with Half / Original / Double / Triple presets. Quantities that start with a number (`"1 1/2 cups"`, `"2 cans (15 oz)"`, `"2–3 tbsp"`) are scaled, and units are re-pluralized. Amounts without a number (`"small handful"`) get a multiplier like `×2`. Can sizes in parentheses are left alone. Freezer-cube counts scale too (rounded, minimum 1); step text is not rewritten.
 
 **Aisles:** `produce`, `meat`, `dairy-eggs`, `bakery`, `pantry`, `spices`, `frozen`, `other`. Other values are allowed and appear as extra sections.
 
@@ -323,6 +331,31 @@ Every key is optional. Values can be numbers or strings like `"32g"`. Recipes wi
 
 ---
 
+## 🥗 Foods & swaps (`foods`, `swaps`)
+
+Two optional top-level sections that let users **swap ingredients** and see the nutrition change.
+
+```json
+"foods": {
+  "ground_beef":    { "label": "Ground beef (85%)",      "per100g": { "calories": 250, "totalFat": 17, "saturatedFat": 6.6, "protein": 18.6 } },
+  "ground_beef_93": { "label": "Lean ground beef (93%)", "per100g": { "calories": 152, "totalFat": 8,  "saturatedFat": 3.3, "protein": 21 } }
+},
+"swaps": [
+  { "name": "Ground meat", "foods": ["ground_beef", "ground_beef_93", "ground_turkey", "plant_ground"] }
+]
+```
+
+| Property | Description |
+|---|---|
+| `foods.<key>.label` | Name shown in the swap picker and on the shopping list when chosen. |
+| `foods.<key>.per100g` | Nutrition per 100 g, using the [`nutrition`](#nutrition) keys. |
+| `swaps[].name` | Group name (also used to replace a group when importing). |
+| `swaps[].foods` | Interchangeable food keys. An ingredient whose `food` is in a group can swap to any other food in it, **at the same weight**. |
+
+A food can be in several groups (Greek yogurt is in both *Creamy toppings* and *Mayo*). The defaults ship about 300 foods and 37 swap groups: grains, pasta, tortillas & wraps, bread, potatoes, ground meat, poultry, sausage, cheeses, dairy, fats, sweeteners, soy sauce, broth, greens, nuts, and more. Many include lighter or higher-fiber options such as brown rice, chickpea pasta, 93% beef, nonfat Greek yogurt and low-sodium soy sauce. Imported `foods` and `swaps` merge with the defaults.
+
+---
+
 ## 🔀 Protein variants
 
 When a recipe lists more than one protein **and** at least one ingredient or step has a `protein` key, the recipe view shows a **"Cook it with"** picker. Picking a protein:
@@ -368,6 +401,23 @@ If a recipe lists several proteins but has no variant ingredients or steps, they
   - an **existing** `id` is **replaced** by the imported version. This includes default recipes, so you can override one by importing a recipe with the same `id`.
 - Any recipe without an `id` or `title`, or any file that isn't valid JSON, is skipped. A message tells you what was skipped and why.
 - Imported recipes are saved in your browser's `localStorage`. They don't change the files on disk, and they stay until you click **Remove imported**.
+
+## 💾 Your saved data (session state)
+
+Everything you change in the page is kept in **one** `localStorage` entry, `bb.session.v1`, and loaded when the app starts:
+
+| Field | What it holds |
+|---|---|
+| `favorites` | Recipe ids you've hearted. The **Favorites** button above the grid shows only these. |
+| `mods` | Your saved versions: `{ "<recipe id>": { "protein", "servings", "swaps": { "<ingredient index>": "<food key>" } } }`. Cards, sorting and new meal-plan entries use them. **Reset to original** deletes one. |
+| `plan` | Meal-plan entries `{ id, protein, servings, swaps }`, so the grocery list is scaled and uses swapped items. |
+| `planBlocks` | Freezer-block batches on the shopping list. |
+| `checked` | Ticked shopping-list items. |
+| `imported`, `importedBlocks`, `importedFoods`, `importedSwaps` | Everything you imported. |
+| `introSeen` | Whether the intro has been shown. |
+| `prefs` | Sort order, active filters, the Favorites toggle, and the last shopping-list tab. |
+
+Older versions stored these under separate `bb.*.v1` keys. They're migrated into `bb.session.v1` automatically on first load, then removed. A saved swap that no longer fits a recipe (for example after importing a changed version) is ignored.
 - **Export** downloads your whole merged library as a single `recipes.json`. Use it to share recipes or to make your imports the new defaults by committing the file.
 
 ---
